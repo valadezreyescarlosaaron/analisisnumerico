@@ -1,0 +1,598 @@
+---
+title: "Tarea 3. Analisis Actividades terciarias y Amazon"
+author: "Carlos Aaron Valadez Reyes"
+lang: es
+format:
+  html:
+    grid:
+      body-width: 1200px 
+---
+
+
+
+```{python}
+#| echo: false
+
+import numpy as np
+import matplotlib.pyplot as plt
+import yfinance as yf
+import pandas as pd
+
+import matplotlib.ticker as ticker
+import seaborn as sns
+import plotly.express as px
+import plotly.graph_objects as go
+import calendar
+import statsmodels.api as sm
+import statsmodels.graphics.tsaplots as tsaplots
+import statsmodels.tsa.stattools as ts
+import statsmodels.tsa.seasonal as seasonal
+```
+
+
+## Indicadores Económicos del INEGI
+
+
+```{python}
+#| code-fold: true
+
+data_inegi = pd.read_excel("TIE_Inegi_long.xlsx")
+data_inegi.info()
+```
+
+
+
+### Actividades terciarias
+
+```{python}
+#| code-fold: true
+df_Actividadesterciarias = data_inegi[["Fecha", "Actividades_terciarias"]].dropna()
+df_Actividadesterciarias.info()
+print(f"Fecha de inicio: {df_Actividadesterciarias['Fecha'].min()}")
+print(f"Fecha de fin: {df_Actividadesterciarias['Fecha'].max()}")
+print("------")
+
+print("Estadísticas descriptivas de Actividades terciarias:")
+print(df_Actividadesterciarias["Actividades_terciarias"].describe())
+```
+
+
+
+**Serie temporal de Actividades terciarias**
+
+```{python}
+#| code-fold: true
+
+# Configurar la columna "Fecha" como índice para facilitar la manipulación de datos y la creación de gráficos de series temporales.
+df_Actividadesterciarias.set_index("Fecha", inplace=True)
+# Definición de la serie temporal
+actividades_ts = df_Actividadesterciarias["Actividades_terciarias"]
+print(actividades_ts.info())
+```
+
+
+**Gráfica de la serie temporal de Actividades terciarias**
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+plt.figure(figsize=(12, 6))
+plt.plot(actividades_ts.index, actividades_ts.values, marker='o', ms=3)
+plt.title('Actividades Terciarias')
+plt.xlabel('Fecha')
+plt.ylabel('Número de Actividades terciarias')
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+Filtramos datos a partir de 2016 para observar mejor la tendencia en los últimos años.
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+actividades_ts_2016 = actividades_ts[actividades_ts.index >= "2016-01-01"]
+plt.figure(figsize=(12, 6))
+plt.plot(actividades_ts_2016.index, actividades_ts_2016.values, marker='o', ms=5)
+plt.title('Actividades Terciarias (Desde 2016)')
+plt.xlabel('Fecha')
+plt.ylabel('Número de Actividades terciarias')
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+
+**Gráfica interactiva de la serie temporal de Actividades terciarias**
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+
+fig = px.line(x = actividades_ts_2016.index, y = actividades_ts_2016.values, title='Actividades Terciarias', labels={'y': 'Número de Actividades terciarias', 'x': 'Fecha'})
+fig.update_xaxes(rangeslider_visible=True)
+```
+
+
+**Comparación anual Actividades terciarias**
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+# Preparación de datos para la gráfica de comparación anual
+df_actividadesterciarias_anual = actividades_ts_2016.reset_index()
+df_actividadesterciarias_anual['Año'] = df_actividadesterciarias_anual['Fecha'].dt.year
+df_actividadesterciarias_anual['Mes'] = df_actividadesterciarias_anual['Fecha'].dt.month
+df_actividadesterciarias_anual["Nombre_mes"] = df_actividadesterciarias_anual['Fecha'].dt.strftime('%b')
+
+
+plt.figure(figsize=(12, 6))
+sns.lineplot(data=df_actividadesterciarias_anual, x='Nombre_mes', y='Actividades_terciarias', hue='Año', marker='o', palette='tab10')
+plt.title('Comparación Anual de Actividades Terciarias')
+plt.xlabel('Mes')
+plt.ylabel('Número de Actividades Terciarias')
+plt.legend(title='Año', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+**Comparación mensual de Actividades Terciarias**
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+plt.figure(figsize=(12, 6))
+sns.lineplot(data=df_actividadesterciarias_anual, x='Año', y='Actividades_terciarias', hue='Nombre_mes', marker='o', palette='tab10')
+plt.title('Comparación Mensual de Actividades Terciarias')
+plt.xlabel('Año')
+plt.ylabel('Número de Actividades Terciarias')
+plt.legend(title='Mes', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+fig = px.line(df_actividadesterciarias_anual, x='Año', y='Actividades_terciarias', markers=True, color='Nombre_mes', title='Comparación Mensual de Actividades Terciarias', labels={'Actividades_terciarias': 'Número de Actividades Terciarias'})
+fig.update_layout(legend_title_text='Mes', plot_bgcolor='rgba(194, 190, 190, 0)', xaxis=dict(tickmode='linear'))
+fig.update
+fig.update_xaxes(dtick=1, gridcolor='rgba(138, 132, 132, 0.77)')
+fig.update_yaxes(gridcolor='rgba(138, 132, 132, 0.77)')
+
+```
+
+
+**Boxplot trimestral de Actividades Terciarias**
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+df_actividadesterciarias_anual['Trimestre'] = df_actividadesterciarias_anual['Fecha'].dt.to_period('Q')
+
+# Variable combinada de año y trimestre para el eje x
+df_actividadesterciarias_anual['Año_Trimestre'] = df_actividadesterciarias_anual['Año'].astype(str) + '-Q' + df_actividadesterciarias_anual['Trimestre'].dt.quarter.astype(str)
+
+plt.figure(figsize=(12, 6))
+sns.boxplot(data=df_actividadesterciarias_anual, x='Año_Trimestre', y='Actividades_terciarias', hue='Año', palette= 'Paired')
+plt.title('Boxplot Trimestral de Actividades Terciarias')
+plt.xlabel('Año-Trimestre')
+plt.ylabel('Número de Actividades Terciarias')
+plt.xticks(rotation=45)
+plt.grid(alpha=0.3)
+plt.legend(title='Año', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.show()
+
+
+```
+
+
+**Heatmap de Actividades Terciarias**
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+# Preparación de datos para el heatmap
+heatmap_data = df_actividadesterciarias_anual.pivot_table(index='Mes', columns='Año', values='Actividades_terciarias')
+
+plt.figure(figsize=(12, 6))
+sns.heatmap(heatmap_data, annot=True, linewidths=0.5, fmt=".1e", cmap='Spectral')
+plt.title('Heatmap de Actividades Terciarias por Mes y Año')
+plt.xlabel('Año')
+plt.ylabel('Mes')
+plt.yticks(ticks = np.linspace(0.5, 11.5, 12), labels=[calendar.month_abbr[i] for i in range(1, 13)], rotation=0)
+plt.show()
+```
+
+
+**Superficie actividades terciarias**
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+Z = heatmap_data.values
+X = heatmap_data.columns.astype(str) #Años
+Y = calendar.month_abbr[1:13] #Meses
+
+fig = go.Figure(data=[go.Surface(z=Z, x=X, y=Y, 
+                contours=dict(
+        x=dict(
+            show=True,          # Líneas por año sobre la superficie
+            color="white",
+            width=2
+        ),
+        y=dict(
+            show=True,          # Líneas por mes sobre la superficie
+            color="white",
+            width=2
+        )
+    ),
+                colorscale='Spectral')])
+fig.update_layout(title='Superficie actividades terciarias',
+                  scene=dict(xaxis_title='Año', yaxis_title='Mes', zaxis_title='Número de Actividades Terciarias'),
+                  autosize=True,
+                  height=600)
+```
+
+
+
+**Descomposición aditiva de la serie temporal de actividades terciarias**
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+#| fig-cap: "Descomposición aditiva de la serie temporal de actividades terciarias"
+
+decomposition_add = seasonal.seasonal_decompose(actividades_ts_2016, model='additive', period=12)
+
+plt.figure(figsize=(12, 8))
+plt.subplot(4,1,1)
+plt.plot(actividades_ts_2016,color='blue')
+plt.title('Serie Temporal Original')
+
+plt.subplot(4,1,2)
+plt.plot(decomposition_add.trend,color='orange')
+plt.title('Tendencia')
+
+plt.subplot(4,1,3)
+plt.plot(decomposition_add.seasonal,color='green')
+plt.title('Estacionalidad')
+
+plt.subplot(4,1,4)
+plt.plot(decomposition_add.resid,color='red')
+plt.title('Ruido')
+plt.tight_layout()
+plt.show()
+
+```
+
+
+**Descomposición multiplicativa de la serie temporal de actividades terciarias**
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+#| fig-cap: "Descomposición multiplicativa de la serie temporal de actividades terciarias"
+
+decomposition_mul = seasonal.seasonal_decompose(actividades_ts_2016, model='multiplicative', period=12)
+plt.figure(figsize=(12, 8))
+plt.subplot(4,1,1)
+plt.plot(actividades_ts_2016,color='blue')
+plt.title('Serie Temporal Original')
+
+plt.subplot(4,1,2)
+plt.plot(decomposition_mul.trend,color='orange')
+plt.title('Tendencia')
+
+plt.subplot(4,1,3)
+plt.plot(decomposition_mul.seasonal,color='green')
+plt.title('Estacionalidad')
+
+plt.subplot(4,1,4)
+plt.plot(decomposition_mul.resid,color='red')
+plt.title('Ruido')
+plt.tight_layout()
+plt.show()
+```
+
+## Valores financieros (enfoque en Amazon)
+
+Ahora vamos a graficar las series temporales de los precios de las acciones de Amazon (AMZN), Apple (AAPL),Microsoft (MSFT), Google (GOOGL) y Facebook (META) utilizando la biblioteca `yfinance` para obtener los datos históricos de las acciones y `matplotlib` para visualizarlos. Esto nos permitirá analizar la evolución de los precios de estas acciones a lo largo del tiempo y comparar su desempeño. El periodo de análisis se establece desde el 1 de enero de 2020 hasta el 31 de diciembre de 2025, lo que nos brinda una visión completa de su comportamiento durante estos años.
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+tickers = ["AMZN", "AAPL", "MSFT", "GOOGL", "META"]
+start_date = "2020-01-01"
+end_date = "2025-12-31"
+
+df_yf = yf.download(tickers, start=start_date, end=end_date, interval="1d")["Close"]
+```
+
+**Gráfica de los precios de las acciones**
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+fig = go.Figure()
+for ticker in tickers:
+    fig.add_trace(go.Scatter(x=df_yf.index, y=df_yf[ticker], name=ticker))
+fig.update_layout(title='Precios de las acciones (2020-2025)', xaxis_title='Fecha', yaxis_title='Precio (USD)', legend_title_text='Acciones', hovermode='x unified')
+fig.update_xaxes(rangeslider_visible=True, gridcolor='rgba(138, 132, 132, 0.77)')
+fig.update_yaxes(gridcolor='rgba(138, 132, 132, 0.77)')
+fig.show()  
+```
+
+
+```{python}
+print(type(df_yf))
+print(df_yf.columns.tolist())
+print(df_yf.head(2))
+```
+
+
+**Candlestick de AMZN**
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+df_AMZN_ohlc = yf.download("AMZN", start='2025-11-01', end='2025-12-31', interval="1d")
+AMZN = df_AMZN_ohlc.xs("AMZN", level=1, axis=1)
+
+fig = go.Figure(data=[go.Candlestick(x=AMZN.index,
+                open=AMZN['Open'],
+                high=AMZN['High'],
+                low=AMZN['Low'],
+                close=AMZN['Close'])])
+fig.update_layout(title='Gráfico de Velas de AMZN (2020-2025)', xaxis_title='Fecha', yaxis_title='Precio (USD)')
+fig.update_xaxes(rangeslider_visible=True, gridcolor='rgba(138, 132, 132, 0.77)')
+fig.update_yaxes(gridcolor='rgba(138, 132, 132, 0.77)')
+fig.show()
+```
+
+
+
+**Resumen estadístico de los precios de AMZN**
+
+```{python}
+#| code-fold: true
+
+AMZN_ts = df_yf["AMZN"].dropna()
+print(AMZN_ts.info())
+print(f"Fecha de inicio: {AMZN_ts.index.min()}")
+print(f"Fecha de fin: {AMZN_ts.index.max()}")
+print("------")
+print("Estadísticas descriptivas de AMZN:")
+print(AMZN_ts.describe())
+
+```
+
+**Comparación anual de AMZN**
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+AMZN_df = AMZN_ts.reset_index()
+AMZN_df['Año'] = AMZN_df['Date'].dt.year
+AMZN_df['Mes'] = AMZN_df['Date'].dt.month
+AMZN_df["Nombre_mes"] = AMZN_df['Date'].dt.strftime('%b')
+AMZN_df['Dia_año']   = AMZN_df['Date'].dt.dayofyear 
+
+plt.figure(figsize=(12, 6))
+sns.lineplot(data=AMZN_df, x='Nombre_mes', y='AMZN', hue='Año', marker='o', palette='tab10')
+plt.title('Comparación Anual de AMZN (Mensual)')
+plt.xlabel('Mes')
+plt.ylabel('Precio (USD)')
+plt.legend(title='Año', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+#| code-fold: true
+#| fig-align: "center"
+
+plt.figure(figsize=(12, 6))
+sns.lineplot(
+    data=AMZN_df,
+    x='Dia_año',
+    y='AMZN',
+    hue='Año',
+    palette='tab10',
+    errorbar=None
+)
+
+# Reemplazar números de día por nombres de mes en el eje X
+
+meses_dias = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
+meses_nombres = ['Ene','Feb','Mar','Abr','May','Jun',
+                 'Jul','Ago','Sep','Oct','Nov','Dic']
+plt.xticks(ticks=meses_dias, labels=meses_nombres)
+
+plt.title('Comparación Anual de AMZN (Diaria)')
+plt.xlabel('Mes')
+plt.ylabel('Precio (USD)')
+plt.legend(title='Año', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.show()
+```
+
+
+**Boxplot trimestral de AMZN**
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+
+AMZN_df['Trimestre'] = AMZN_df['Date'].dt.to_period('Q')
+AMZN_df['Año_Trimestre'] = AMZN_df['Año'].astype(str) + '-Q' + AMZN_df['Trimestre'].dt.quarter.astype(str)
+
+plt.figure(figsize=(12, 6))
+sns.boxplot(data=AMZN_df, x='Año_Trimestre', y='AMZN', hue='Año', palette= 'Paired')
+plt.title('Boxplot Trimestral de AMZN')
+plt.xlabel('Año-Trimestre')
+plt.ylabel('Precio (USD)')
+plt.xticks(rotation=45)
+plt.grid(alpha=0.3)
+plt.legend(title='Año', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.show()
+```
+
+**Heatmap de AMZN**
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+# Crear columna de día del año para ordenar correctamente
+AMZN_df['Mes-dia']  = AMZN_df['Date'].dt.strftime('%b-%d')
+
+
+heatmap_data_amzn = AMZN_df.pivot_table(
+    index='Mes-dia',
+    columns='Año',
+    values='AMZN'
+)
+
+# Ordenar por día del año (no alfabéticamente)
+orden = (AMZN_df.drop_duplicates('Mes-dia')
+                 .sort_values('Dia_año')['Mes-dia']
+                 .tolist())
+heatmap_data_amzn = heatmap_data_amzn.reindex(orden)
+
+# Rellenar NaN para eliminar líneas blancas
+heatmap_data_amzn = heatmap_data_amzn.ffill().bfill()
+
+plt.figure(figsize=(12, 8))
+sns.heatmap(
+    heatmap_data_amzn,
+    annot=False,
+    cmap='Spectral',
+    linewidths=0,        
+    linecolor='none'     
+)
+plt.title('Heatmap de AMZN por Fecha y Año')
+plt.xlabel('Año')
+plt.ylabel('Fecha')
+
+plt.tight_layout()
+plt.show()
+```
+
+
+**Superficie de AMZN**
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+Z = heatmap_data_amzn.values
+X = heatmap_data_amzn.columns.astype(str) #Años
+Y = heatmap_data_amzn.index #Fechas
+
+fig = go.Figure(data=[go.Surface(z=Z, x=X, y=Y, 
+                contours=dict(
+        x=dict(
+            show=True,          # Líneas por año sobre la superficie
+            color="white",
+            width=2
+        ),
+        y=dict(
+            show=True,          # Líneas por fecha sobre la superficie
+            color="white",
+            width=2
+        )
+    ),
+                colorscale='Spectral')])
+fig.update_layout(title='Superficie de AMZN', scene=dict(xaxis_title='Año', yaxis_title='Fecha', zaxis_title='Precio (USD)'), autosize=True, height=600)
+```
+
+**Descomposición aditiva de AMZN**
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+#| fig-cap: "Descomposición aditiva de la serie temporal de AMZN"
+
+
+# Utilizar periodo de 252 para capturar la estacionalidad anual en datos diarios (252 días hábiles por año que es el estándar en finanzas)
+decomposition_add_amzn = seasonal.seasonal_decompose(AMZN_ts, model='additive', period=252)
+plt.figure(figsize=(12, 8))
+plt.subplot(4,1,1)
+plt.plot(AMZN_ts,color='blue')
+plt.title('Serie Temporal Original')
+
+plt.subplot(4,1,2)
+plt.plot(decomposition_add_amzn.trend,color='orange')
+plt.title('Tendencia')
+
+plt.subplot(4,1,3)
+plt.plot(decomposition_add_amzn.seasonal,color='green')
+plt.title('Estacionalidad')
+
+plt.subplot(4,1,4)
+plt.plot(decomposition_add_amzn.resid,color='red')
+plt.title('Ruido')
+plt.tight_layout()
+plt.show()
+```
+
+**Descomposición multiplicativa de AMZN**
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+#| fig-cap: "Descomposición multiplicativa de la serie temporal de AMZN"
+
+decomposition_mul_amzn = seasonal.seasonal_decompose(AMZN_ts, model='multiplicative', period=252)
+plt.figure(figsize=(12, 8))
+plt.subplot(4,1,1)
+plt.plot(AMZN_ts,color='blue')
+plt.title('Serie Temporal Original')
+
+plt.subplot(4,1,2)
+plt.plot(decomposition_mul_amzn.trend,color='orange')
+plt.title('Tendencia')
+
+plt.subplot(4,1,3)
+plt.plot(decomposition_mul_amzn.seasonal,color='green')
+plt.title('Estacionalidad')
+
+plt.subplot(4,1,4)
+plt.plot(decomposition_mul_amzn.resid,color='red')
+plt.title('Ruido')
+plt.tight_layout()
+plt.show()
+```
+
