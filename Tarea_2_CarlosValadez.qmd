@@ -1,0 +1,899 @@
+---
+title: "Tarea 2. Punto fijo y series de Taylor"
+author: "Carlos Aaron Valadez Reyes"
+lang: es
+format: 
+  html:
+    grid:
+      body-width: 1200px
+---
+
+```{python}
+#| code-fold: true
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import optimize
+from math import factorial
+from scipy.optimize import fsolve
+```
+
+::: {#exr-tarea2_1}
+
+Sea $f(x)=x^4+2x^2-x-3$, demostrar que cada cada una de las siguientes funciones tiene un punto fijo en $p$, precisamente donde $f(p)=0$. Esta función tiene dos raíces reales en el intervalo $[-2,2]$, encuentra estas raíces usando el método de punto fijo con cada una de las funciones proporcionadas (en algunos casos será necesario la raíz negativa) y brindando un intervalo de convergencia para cada una de ellas. En cada caso, grafica la función $g_i(x)$ y el eje $y=x$ para visualizar los puntos fijos.
+
+**(a)** $g_1(x) = \sqrt[4]{3+x-2x^2}$
+
+```{python}
+#| code-fold: true
+#| fig-align: 'center'
+
+f = lambda x: x**4 + 2*x**2 - x - 3
+g1 = lambda x: (3 + x - 2*x**2)**(1/4)
+g1_neg = lambda x: - (3 + x - 2*x**2)**(1/4)
+root_1 = optimize.fixed_point(g1, x0=1)
+root_2 = optimize.fixed_point(g1_neg, x0=-0.8)
+
+x = np.linspace(-1, 1.5, 300)
+plt.figure(figsize=(6,4.5))
+plt.plot(x, f(x), color = "steelblue", label = "f(x)")
+plt.plot(x, g1(x), color = "darkgreen", label = "g1(x)")
+plt.plot(x, -g1(x), color = "goldenrod", label = "-g1(x)")
+plt.plot(x, x, color = "black", label = "y=x")
+plt.plot(root_1, root_1, marker = 'o', ms=8, color= "yellow", label = "Punto fijo 1")
+plt.plot(root_1, 0, marker = 'o', ms=8, color= "yellow", label = "raiz 1")
+plt.plot(root_2, root_2, marker = 'o', ms=8, color= "red", label = "Punto fijo 2")
+plt.plot(root_2, 0, marker = 'o', ms=8, color= "red", label = "raiz 2")
+
+# Personalizar gráfica
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid()
+plt.axis('equal')  # Escala igual en ambos ejes
+plt.legend()
+plt.show()
+
+```
+
+
+**(b)** $g_2(x) = \sqrt{\frac{3 + x - x^4}{2}}$
+
+```{python}
+#| code-fold: true
+#| fig-align: 'center'
+
+f = lambda x: x**4 + 2*x**2 - x - 3
+g2 = lambda x: np.sqrt((3 + x - x**4)/2)
+g2_neg = lambda x: -np.sqrt((3 + x - x**4)/2)
+root_1 = optimize.fixed_point(g2, x0=1)
+root_2 = optimize.fixed_point(g2_neg, x0=-0.8)
+
+x = np.linspace(-1, 1.5, 300)
+plt.figure(figsize=(6,4.5))
+plt.plot(x, f(x), color = "steelblue", label = "f(x)")
+plt.plot(x, g2(x), color = "darkgreen", label = "g2(x)")
+plt.plot(x, -g2(x), color = "goldenrod", label = "-g2(x)")
+plt.plot(x, x, color = "black", label = "y=x")
+plt.plot(root_1, root_1, marker = 'o', ms=8, color= "yellow", label = "Punto fijo 1")
+plt.plot(root_1, 0, marker = 'o', ms=8, color= "yellow", label = "raiz 1")
+plt.plot(root_2, root_2, marker = 'o', ms=8, color= "red", label = "Punto fijo 2")
+plt.plot(root_2, 0, marker = 'o', ms=8, color= "red", label = "raiz 2")
+
+# Personalizar gráfica
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid()
+plt.axis('equal')  # Escala igual en ambos ejes
+plt.legend()
+plt.show()
+
+```
+
+**(c)** $g_3(x) = \sqrt{\frac{x+3}{x^2+2}}$
+
+```{python}
+#| code-fold: true
+#| fig-align: 'center'
+
+f = lambda x: x**4 + 2*x**2 - x - 3
+g3 = lambda x: np.sqrt((x + 3)/(x**2 + 2))
+g3_neg = lambda x: -np.sqrt((x + 3)/(x**2 + 2))
+root_1 = optimize.fixed_point(g3, x0=1)
+root_2 = optimize.fixed_point(g3_neg, x0=-0.8)
+
+x = np.linspace(-1, 1.5, 300)
+plt.figure(figsize=(6,4.5))
+plt.plot(x, f(x), color = "steelblue", label = "f(x)")
+plt.plot(x, g3(x), color = "darkgreen", label = "g3(x)")
+plt.plot(x, -g3(x), color = "goldenrod", label = "-g3(x)")
+plt.plot(x, x, color = "black", label = "y=x")
+plt.plot(root_1, root_1, marker = 'o', ms=8, color= "yellow", label = "Punto fijo 1")
+plt.plot(root_1, 0, marker = 'o', ms=8, color= "yellow", label = "raiz 1")
+plt.plot(root_2, root_2, marker = 'o', ms=8, color= "red", label = "Punto fijo 2")
+plt.plot(root_2, 0, marker = 'o', ms=8, color= "red", label = "raiz 2")
+
+# Personalizar gráfica
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid()
+plt.axis('equal')  # Escala igual en ambos ejes
+plt.legend()
+plt.show()
+
+```
+
+**(d)** $g_4(x) = \frac{3x^4+2x^2+3}{4x^3+4x-1}$
+
+```{python}
+#| code-fold: true
+#| fig-align: 'center'
+
+f = lambda x: x**4 + 2*x**2 - x - 3
+g4 = lambda x: (3*x**4 + 2*x**2 + 3)/(4*x**3 + 4*x - 1)
+#g4_neg = lambda x: -(3*x**4 + 2*x**2 + 3)/(4*x**3 + 4*x - 1)
+#root_1 = optimize.fixed_point(g4, x0=1)
+#root_2 = optimize.fixed_point(g4_neg, x0=-0.8)
+
+x = np.linspace(-1, 1.5, 300)
+x_der = np.linspace(1, 1.5, 300)  # Evitar el cero en el denominador
+x_izq = np.linspace(-1, -0.5, 300)  # Evitar el cero en el denominador
+plt.figure(figsize=(6,4.5))
+plt.plot(x, f(x), color = "steelblue", label = "f(x)")
+plt.plot(x_der, g4(x_der), color = "darkgreen", label = "g4(x) Der")
+plt.plot(x_izq, g4(x_izq), color = "firebrick", label = "g4(x) Izq")
+#plt.plot(x, -g4(x), color = "goldenrod", label = "-g4(x)")
+plt.plot(x, x, color = "black", label = "y=x")
+#plt.plot(root_1, root_1, marker = 'o', ms=8, color= "yellow", label = "Punto fijo 1")
+#plt.plot(root_1, 0, marker = 'o', ms=8, color= "yellow", label = "raiz 1")
+#plt.plot(root_2, root_2, marker = 'o', ms=8, color= "red", label = "Punto fijo 2")
+#plt.plot(root_2, 0, marker = 'o', ms=8, color= "red", label = "raiz 2")
+
+# Personalizar gráfica
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid()
+plt.axis('equal')  # Escala igual en ambos ejes
+plt.legend()
+plt.show()
+
+```
+
+:::
+
+
+
+
+
+::: {#exr-tarea2_2}
+
+Usa el método de iteración de punto fijo para determinar las raíces reales de la función $f(x)=x^4-3x^2-3$ usando las funciones apropiadamente transformadas. Grafica cada función de iteración junto con el eje $y=x$ para visualizar los puntos fijos y determinar un intervalo de convergencia para cada una de ellas.
+
+```{python}
+
+#| code-fold: true
+#| fig-align: 'center'
+
+f = lambda x: x**4 - 3*x**2 - 3
+g1 = lambda x: (3*x**2 + 3)**(1/4)
+g1_neg = lambda x: - (3*x**2 + 3)**(1/4)
+root_1 = optimize.fixed_point(g1, x0=1)
+root_2 = optimize.fixed_point(g1_neg, x0=-1)
+
+
+x = np.linspace(-3, 3, 300)
+x_der = np.linspace(-3, 3, 300)  # Evitar el cero en el denominador
+x_izq = np.linspace(-3, 3, 300)  # Evitar el cero en el denominador
+
+plt.figure(figsize=(6,4.5))
+plt.plot(x, f(x), color = "steelblue", label = "f(x)")
+plt.plot(x_der, g1(x_der), color = "darkgreen", label = "g1(x) Der")
+plt.plot(x_izq, g1_neg(x_izq), color = "firebrick", label = "g1(x) Izq")
+plt.plot(x, x, color = "black", label = "y=x")
+plt.plot(root_1, root_1, marker = 'o', ms=8, color= "yellow", label = "Punto fijo 1")
+plt.plot(root_1, 0, marker = 'o', ms=8, color= "yellow", label = "raiz 1")
+plt.plot(root_2, root_2, marker = 'o', ms=8, color= "red", label = "Punto fijo 2")
+plt.plot(root_2, 0, marker = 'o', ms=8, color= "red", label = "raiz 2")
+
+def punto_fijo(g, p0, tol= 1e-5, itmax=500):
+    for i in range(itmax):
+        p_new = g(p0)
+        if np.abs(p_new-p0) < tol:
+            return p_new, i+1
+        p0 = p_new
+    raise RuntimeError(f"No se encontró un punto fijo en {itmax} iteraciones.")
+
+# Personalizar gráfica
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid()
+plt.axis('equal')  # Escala igual en ambos ejes
+plt.legend()
+plt.show()
+
+```
+
+```{python}
+
+raiz1,iter1=punto_fijo(g1,1,tol=1e-7)
+
+
+print(f"La aprox. de la raiz con g1, después menos un punto fijo de {iter1} iteraciones es:{raiz1}")
+
+
+```
+
+:::
+
+
+::: {#exr-tarea2_3}
+
+Encuentra todas las raíces de la función $f(x)= x^2+10\,cos(x)$ usando el método de punto fijo. Para esto, transforma la función de manera adecuada para obtener funciones de iteración que permitan encontrar las raíces. Grafica cada función de iteración junto con el eje $y=x$ para visualizar los puntos fijos y determinar un intervalo de convergencia para cada una de ellas.
+
+```{python}
+#| code-fold: true
+#| fig-align: 'center'
+
+f = lambda x: x**2 + 10*np.cos(x)
+f_root1 = optimize.newton(f, 1.5)
+f_root2 = optimize.newton(f, -3)
+f_root3 = optimize.newton(f, -1)
+f_root4 = optimize.newton(f, 3)
+
+x = np.linspace(-4, 4, 200)
+plt.figure(figsize=(6,4.5))
+plt.plot(x, f(x), color = "darkred", label = "f(x)")  
+plt.plot(f_root1, 0, marker = 'o', ms=8, color= "#1c29df", label = "Raíz de f1")
+plt.plot(f_root2, 0, marker = 'o', ms=8, color= "#1c29df", label = "Raíz de f2")
+plt.plot(f_root3, 0, marker = 'o', ms=8, color= "#1c29df", label = "Raíz de f3")
+plt.plot(f_root4, 0, marker = 'o', ms=8, color= "#1c29df", label = "Raíz de f4")
+plt.axhline(0, color = "black", linewidth = 0.8, linestyle = "--") #Eje x
+# Personalizar gráfica
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid()
+plt.legend()
+plt.show()
+
+```
+
+
+:::
+
+
+::: {#exr-tarea2_4}
+
+Un mercado presenta las funciones de demanda y oferta:
+
+\begin{equation}
+D(p) = 15e^{-0.4p}, \qquad S(p) = 2p^{1.2} - 1,
+\end{equation}
+
+con mecanismo de ajuste de precios $\alpha = 0.25$:
+
+\begin{equation}
+g(p) = p + 0.25(D(p) - S(p)) = p + 0.25(15e^{-0.4p} - 2p^{1.2} + 1).
+\end{equation}
+
+**(a)** Demostrar que existe un intervalo $[a, b]$ apropiado donde se cumplen las condiciones del teorema de existencia y unicidad del punto fijo. Justificar la elección de $a$ y $b$ verificando que $g([a,b]) \subseteq [a,b]$.
+
+```{python}
+#| code-fold: true
+#| fig-align: 'center'
+
+g = lambda x: x + 0.25*(15*np.exp(-0.4*x) - 2*x**1.2 + 1)
+
+x = np.linspace(2, 4, 200)
+plt.figure(figsize=(6,4.5))
+plt.plot(x, g(x), color = "steelblue", label = "g(x)")
+#plt.plot(x, x, color = "black", label = "y=x")
+#plt.plot(x, g3(x), color = "darkorange", label = "g3(x)")
+plt.plot(x, x, color = "black", label = "y=x")
+#plt.plot(f_root, f_root, marker = 'o', ms=8, color= "black", label = "Punto fijo")
+# Personalizar gráfica
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid()
+plt.axis('equal')  # Escala igual en ambos ejes
+plt.legend()
+plt.show()
+
+```
+
+**(b)** Analizar la condición $|g'(p)| \leq k < 1$ en dicho intervalo. Determinar explícitamente una constante de contracción $k$.
+
+```{python}
+#| code-fold: true
+#| fig-align: 'center'
+
+g_prime = lambda x: 1 + 0.25*(-6*np.exp(-0.4*x) - 2.4*x**0.2)
+
+x = np.linspace(2, 4, 200)
+plt.figure(figsize=(6,4.5))
+plt.plot(x, g_prime(x), color = "steelblue", label = "g'(x)")
+#plt.plot(x, x, color = "black", label = "y=x")
+#plt.plot(x, g3(x), color = "darkorange", label = "g3(x)")
+#plt.plot(x, x, color = "black", label = "y=x")
+#plt.plot(f_root, f_root, marker = 'o', ms=8, color= "black", label = "Punto fijo")
+# Personalizar gráfica
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid()
+plt.axis('equal')  # Escala igual en ambos ejes
+plt.legend()
+plt.show()
+
+```
+
+**(c)** Aplicar la iteración de punto fijo con hasta alcanzar una tolerancia de $10^{-6}$, reportando la tabla de iteraciones y la cota de error a posteriori en cada paso.
+
+
+```{python}
+#| code-fold: true
+#| fig-align: 'center'
+
+def punto_fijo(g, p0, tol= 1e-6, itmax=500):
+    for i in range(itmax):
+        p_new = g(p0)
+        if np.abs(p_new-p0) < tol:
+            return p_new, i+1
+        p0 = p_new
+    raise RuntimeError(f"No se encontró un punto fijo en {itmax} iteraciones.")
+
+```
+
+```{python}
+g_prime,iter1=punto_fijo(g1,1,tol=1e-7)
+
+print(f"La aprox. de la raiz con g1, después menos un punto fijo de {iter1} iteraciones es:{raiz1}")
+
+```
+
+**(d)** Interpretar económicamente el precio de equilibrio $p^*$ obtenido: ¿qué implica sobre las cantidades de equilibrio $D(p^*)$ y $S(p^*)$?
+
+:::
+
+```{python}
+
+#| code-fold: true
+#| fig-align: 'center'
+
+pf1 = optimize.fixed_point(g1,8)
+
+x = np.linspace(1, 5, 200)
+plt.figure(figsize=(6,4.5))
+plt.plot(x, g1(x), color = "#0f41f4", label = "D(p)")
+plt.plot(x,x,color = "black", label = "y=x")
+plt.plot(pf1, pf1, color = "#f17509", label = "S(p)", marker = "o")
+# Personalizar gráfica
+plt.xlabel("p")
+plt.ylabel("precio")
+plt.grid()
+plt.axis('equal')  # Escala igual en ambos ejes
+plt.legend()
+plt.show()
+
+print(f"el precio de equilibrio es {pf1}")
+
+```
+
+
+::: {#exr-tarea2_5}
+
+Un mercado con retornos decrecientes a escala en la producción presenta:
+
+\begin{equation}
+D(p) = \frac{18}{(1+p)^{0.8}}, \qquad S(p) = 3 + 2\ln(p),
+\end{equation}
+
+con $\alpha = 0.2$:
+
+\begin{equation}
+g(p) = p + 0.2\left(\frac{18}{(1+p)^{0.8}} - 3 - 2\ln(p)\right).
+\end{equation}
+
+**(a)** Determinar un intervalo $[a, b]$ con $a > 0$ donde se satisfagan las hipótesis del teorema de existencia y unicidad del punto fijo. La elección de $a$ debe ser cuidadosa pues $\ln(p) \to -\infty$ cuando $p \to 0^+$, y la derivada presenta problemas cerca del origen.
+
+```{python}
+
+
+#| code-fold: true
+#| fig-align: 'center'
+
+g = lambda x: x + 0.2*(18/(1+x)**0.8 - 3 - 2*np.log(x))
+
+x = np.linspace(2, 4, 200)
+plt.figure(figsize=(6,4.5))
+plt.plot(x, g(x), color = "steelblue", label = "g(x)")
+#plt.plot(x, x, color = "black", label = "y=x")
+#plt.plot(x, g3(x), color = "darkorange", label = "g3(x)")
+plt.plot(x, x, color = "black", label = "y=x")
+#plt.plot(f_root, f_root, marker = 'o', ms=8, color= "black", label = "Punto fijo")
+# Personalizar gráfica
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid()
+plt.axis('equal')  # Escala igual en ambos ejes
+plt.legend()
+plt.show()
+
+```
+
+**(b)** Determinar una constante de contracción $k$ explícita para el intervalo elegido y estimar cuántas iteraciones son necesarias para garantizar un error menor que $10^{-5}$ usando la **cota a priori**, tomando $p_0 = 4$.
+
+```{python}
+
+#| code-fold: true
+g_prime = lambda x: 1 + 0.2*(-14.4/(1+x)**1.8 - 2/x)
+x = np.linspace(2, 4, 200)
+plt.figure(figsize=(6,4.5))
+plt.plot(x, g_prime(x), color = "steelblue", label = "g'(x)")
+
+def punto_fijo(g, p0, tol= 1e-6, itmax=500):
+    for i in range(itmax):
+        p_new = g(p0)
+        if np.abs(p_new-p0) < tol:
+            return p_new, i+1
+        p0 = p_new
+    raise RuntimeError(f"No se encontró un punto fijo en {itmax} iteraciones.")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid()
+plt.axis('equal')  # Escala igual en ambos ejes
+plt.legend()
+plt.show()
+```
+
+```{python}
+
+g_prime,iter1=punto_fijo(g1,1,tol=1e-5)
+
+print(f"La aprox. de la raiz con g1, después menos un punto fijo de {iter1} iteraciones es:{raiz1}")
+```
+
+**(c)** Implementar la iteración con $p_0 = 4$ hasta alcanzar la tolerancia de $10^{-5}$, reportando la tabla de iteraciones y la cota de error a posteriori en cada paso.
+
+```{python}
+
+p0 = 4
+
+def punto_fijo(g, p0, tol= 1e-5, itmax=500):
+    for i in range(itmax):
+        p_new = g(p0)
+        if np.abs(p_new-p0) < tol:
+            return p_new, i+1
+        p0 = p_new
+    raise RuntimeError(f"No se encontró un punto fijo en {itmax} iteraciones.")
+
+```
+
+```{python}
+
+g_prime,iter1=punto_fijo(g1,1,tol=1e-5)
+
+print(f"La aprox. de la raiz con g1, después menos un punto fijo de {iter1} iteraciones es:{raiz1}")
+```
+
+
+
+**(d)** Investigar qué ocurre si se toma $\alpha = 0.6$. ¿Converge el método? Relacionar la respuesta con el valor de $g'(p)$ en el intervalo y desarrollar la interpretación económica.
+
+# En general el metodo deberia de converger, pero no igual de rapido que con un alpha menor, esto porque g'(p) es mas grande y nos lleva a cambios mas notorios en los precios que nos lleva a un cambio con el punto de equilibrio. Esto es como en la grafica de oferta y demanda donde un cambio en el precio cambia como la oferta y la demanda se relacionan y por lo tanto se cambia el punto de equilibrio de mercado.
+
+:::
+
+
+::: {#exr-tarea2_6}
+
+Sea $f(x) = e^x\,cos(x)$ y $x_0=0$.
+
+**(a)** Calcular y graficar los polinomios de Taylor hasta orden $n=5$ de $f$ alrededor de $x_0$.
+
+```{python}
+
+import sympy as sp
+
+x = sp.Symbol('x')
+f_sym = sp.exp(x) * sp.cos(x)
+x0 = 0
+x_vals = np.linspace(-2, 2, 400)
+
+
+taylor_polys = []
+labels = ['f(x) original']
+
+for n in range(1, 6):     
+    p_n = f_sym.series(x, x0, n+1).removeO()
+    taylor_polys.append(sp.lambdify(x, p_n, 'numpy'))
+    labels.append(f"Orden n={n}: {p_n}")
+    print(f"P_{n}(x) = {p_n}")
+
+
+f_num = sp.lambdify(x, f_sym, 'numpy')
+
+plt.figure(figsize=(10, 7))
+plt.plot(x_vals, f_num(x_vals), label='e^x cos(x)', color='black', linewidth=2)
+
+for i, p_func in enumerate(taylor_polys):
+    plt.plot(x_vals, p_func(x_vals), label=f'n={i+1}', linestyle='--')
+
+plt.ylim(-2, 4)
+plt.axhline(0, color='black', lw=1)
+plt.axvline(0, color='black', lw=1)
+plt.title(f'Polinomios de Taylor')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+**(b)** Usar $P_5(0.5)$ para aproximar $f(0.5)$.
+
+```{python}
+def p5(x):
+    return 1 + x - (x**3)/3 - (x**4)/6 - (x**5)/30
+
+x_val = 0.5
+aproximacion = p5(x_val)
+valor_real = np.exp(x_val) * np.cos(x_val)
+
+print(f"Aproximación P5(0.5): {aproximacion:.8f}")
+print(f"Valor real f(0.5):    {valor_real:.8f}")
+print(f"Error absoluto:       {abs(valor_real - aproximacion):.8e}")
+```
+
+**(c)** Encontrar una cota superior para el error $|f(0.5) - P_5(0.5)|$ usando el término de orden 6 de la serie de Taylor y comparar esta cota con el error real.
+
+```{python}
+
+from scipy.optimize import minimize_scalar
+
+
+f_6 = sp.diff(f_sym, x, 6)
+f_6_func = sp.lambdify(x, f_6, 'numpy')
+
+
+res = minimize_scalar(lambda t: -abs(f_6_func(t)), bounds=(0, 0.5), method='bounded')
+max_f6 = abs(f_6_func(res.x))
+
+cota_error = (max_f6  * (0.5**6) ) / factorial(6)
+
+val_real = f_num(0.5)
+val_aprox = taylor_polys[4](0.5) 
+error_real = abs(val_real - val_aprox)
+
+print(f"--- Análisis de Error en x = 0.5 ---")
+print(f"Valor Real: {val_real:.10f}")
+print(f"Valor Aproximado (P5): {val_aprox:.10f}")
+print(f"Error Real: {error_real:.10e}")
+print(f"Cota Superior (Lagrange): {cota_error:.10e}")
+
+```
+
+:::
+
+::: {#exr-tarea2_7}
+
+Consideremos la función $f(x) = x e^{x^2}$ y $x_0=0$.
+
+**(a)** Calcular y graficar los polinomios de Taylor hasta orden $n=8$ de $f$ alrededor de $x_0$.
+
+```{python}
+
+x = sp.Symbol('x')
+f_sym = x * sp.exp(x**2)
+x0 = 0
+x_range = np.linspace(-1.2, 1.2, 400)
+
+
+polinomios = []
+for n in range(1, 9):
+    p_n = sp.series(f_sym, x, x0, n+1).removeO()
+    p_func = sp.lambdify(x, p_n, 'numpy')
+    polinomios.append((n, p_n, p_func))
+
+
+plt.figure(figsize=(12, 8))
+f_num = sp.lambdify(x, f_sym, 'numpy')
+plt.plot(x_range, f_num(x_range), label='f(x) = x e^{x^2}', color='black', linewidth=3, zorder=10)
+
+for n, p_expr, p_func in polinomios:
+    if n % 2 != 0 or n == 8: 
+        plt.plot(x_range, p_func(x_range), label=f'P_{n}(x)', linestyle='--')
+        print(f"P_{n}(x) = {p_expr}")
+
+plt.ylim(-4, 4)
+plt.axhline(0, color='black', lw=1)
+plt.axvline(0, color='black', lw=1)
+plt.title(f'Polinomios de Taylor')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+**(b)** Usar $P_8(0.2)$ para aproximar $f(0.2)$.
+
+```{python}
+
+x_val = 0.2
+
+term1 = x_val
+term2 = x_val**3
+term3 = (x_val**5) / 2
+term4 = (x_val**7) / 6
+
+p8_val = term1 + term2 + term3 + term4
+
+f_real = x_val * np.exp(x_val**2)
+
+print(f"Aproximación P8(0.2): {p8_val:.12f}")
+print(f"Valor real f(0.2):    {f_real:.12f}")
+print(f"Error absoluto:       {abs(f_real - p8_val):.5e}")
+```
+
+**(c)** Encontrar una cota superior para el error $|f(0.2) - P_8(0.2)|$ usando el término de orden 9 de la serie de Taylor y comparar esta cota con el error real.
+
+```{python}
+
+x = sp.Symbol('x')
+f_sym = x * sp.exp(x**2)
+x_val = 0.2
+
+# 1. Error Real
+f_num = sp.lambdify(x, f_sym, 'numpy')
+p8_expr = sp.series(f_sym, x, 0, 9).removeO()
+p8_num = sp.lambdify(x, p8_expr, 'numpy')
+
+error_real = abs(f_num(x_val) - p8_num(x_val))
+
+# 2. Cota Superior usando el término de orden 9
+# El término de orden 9 de la serie es x^9 / 4!
+# (Viene de x * (x^2)^4 / 4!)
+cota_error = (x_val**9) 
+
+print(f"--- Análisis de Error en x = 0.2 ---")
+print(f"Error Real:      {error_real:.12e}")
+print(f"Cota Superior:   {cota_error:.12e}")
+
+```
+
+:::
+
+::: {#exr-tarea2_8}
+
+En Microeconomía, la función de utilidad con **aversión relativa al riesgo constante** tiene la forma:
+
+\begin{equation}
+f(x) = \frac{x^{1-\gamma} - 1}{1 - \gamma}, \qquad \gamma > 0,\ \gamma \neq 1, \quad x > 0.
+\end{equation}
+
+Consideremos $\gamma = 0.5$ y se aproxima alrededor de $x_0 = 1$.
+
+**(a)** Calcular y graficar los polinomios de Taylor hasta orden $n = 5$ de $f(x)$ alrededor de $x_0 = 1$. Mostrar explícitamente el cálculo de cada derivada $f^{(k)}(1)$ para $k = 0, 1, 2, 3, 4, 5$.
+
+```{python}
+
+
+x_sym = sp.Symbol('x')
+gamma = 0.5
+f_sym = (x_sym**(1-gamma) - 1) / (1 - gamma)
+x0 = 1
+
+
+x_vals = np.linspace(0.1, 3.0, 400)
+f_num = sp.lambdify(x_sym, f_sym, 'numpy')
+
+plt.figure(figsize=(10, 7))
+plt.plot(x_vals, f_num(x_vals), label='f(x) original', color='black', linewidth=3)
+
+
+for n in range(1, 6):
+    p_n = f_sym.series(x_sym, x0, n+1).removeO()
+    
+    print(f"P_{n}(x) = {sp.simplify(p_n)}")
+    
+    p_func = sp.lambdify(x_sym, p_n, 'numpy')
+    plt.plot(x_vals, p_func(x_vals), label=f'Orden n={n}', linestyle='--')
+
+
+plt.axhline(0, color='black', lw=1)
+plt.axvline(1, color='red', linestyle=':', label='Centro x0=1')
+plt.ylim(-2, 2)
+plt.title(f'Polinomios de Taylor')
+plt.xlabel('Consumo (x)')
+plt.ylabel('Utilidad f(x)')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+
+**(b)** Usando el término de orden 6 del resto de Taylor, acotar el error $|f(x) - P_5(x)|$ en el intervalo $[0.5, 1.5]$. Determinar una cota $M$ tal que $|f^{(6)}(\xi)| \leq M$ para todo $\xi \in [0.5, 1.5]$, teniendo en cuenta que $f^{(6)}(x)$ se hace grande cuando $x \to 0^+$. 
+
+```{python}
+
+
+x_sym = sp.Symbol('x')
+f_sym = 2*sp.sqrt(x_sym) - 2
+
+f6_sym = sp.diff(f_sym, x_sym, 6)
+f6_func = sp.lambdify(x_sym, f6_sym, 'numpy')
+
+M = abs(f6_func(0.5))
+
+distancia_max = 0.5 
+cota_error = (M) * (distancia_max**6)
+
+p5_expr = f_sym.series(x_sym, 1, 6).removeO()
+p5_func = sp.lambdify(x_sym, p5_expr, 'numpy')
+f_num = sp.lambdify(x_sym, f_sym, 'numpy')
+
+error_real = abs(f_num(0.5) - p5_func(0.5))
+
+print(f"Cota M (|f6| en 0.5): {M:.4f}")
+print(f"Cota superior del error: {cota_error:.6f}")
+print(f"Error real en x=0.5:     {error_real:.6f}")
+```
+
+**(c)** Graficar el error máximo en escala logarítmica como función del grado $n$ para $n = 1, 2, \ldots, 5$.
+
+```{python}
+
+
+x_sym = sp.Symbol('x')
+f_sym = 2*sp.sqrt(x_sym) - 2
+x0 = 1
+punto_critico = 0.5  
+
+grados = np.arange(1, 6)
+errores = []
+
+f_real_val = float(f_sym.subs(x_sym, punto_critico))
+
+for n in grados:
+    p_n_expr = f_sym.series(x_sym, x0, n+1).removeO()
+    p_n_val = float(p_n_expr.subs(x_sym, punto_critico))
+    
+    error = abs(f_real_val - p_n_val)
+    errores.append(error)
+    print(f"Orden {n}: Error = {error:.6e}")
+
+plt.figure(figsize=(10, 6))
+plt.semilogy(grados, errores, marker='o', linestyle='-', color='teal', linewidth=2, markersize=8)
+
+plt.title('Error Máximo de Aproximación', fontsize=12)
+plt.xlabel('Grado del Polinomio ($n$)', fontsize=11)
+plt.ylabel('Error Absoluto $|f(0.5) - P_n(0.5)|$', fontsize=11)
+plt.xticks(grados)
+plt.grid(True, which="both", ls="-", alpha=0.5)
+
+for i, txt in enumerate(errores):
+    plt.annotate(f"{txt:.1e}", (grados[i], errores[i]), textcoords="offset points", xytext=(0,10), ha='center')
+
+plt.show()
+```
+
+:::
+
+
+::: {#exr-tarea2_9}
+
+La **tasa de interés efectiva anual** equivalente a una tasa nominal $r$ capitalizada $m$ veces por año es:
+
+\begin{equation}
+f(r) = \left(1 + \frac{r}{m}\right)^m - 1.
+\end{equation}
+
+Consideremos $m = 12$ (capitalización mensual) y se aproxima alrededor de $r_0 = 0$.
+
+**(a)** Calcular los polinomios de Taylor hasta orden $n = 5$ de $f(r)$ alrededor de $r_0 = 0$.
+
+```{python}
+
+r = sp.Symbol('r')
+m = 12
+f_r = (1 + r/m)**m - 1
+r0 = 0
+
+print(f"--- Polinomios de Taylor para m = {m} ---")
+
+for n in range(1, 6):
+    p_n = f_r.series(r, r0, n+1).removeO()
+    
+    p_n_simplified = sp.simplify(p_n)
+    
+    print(f"P_{n}(r) = {p_n_simplified}")
+```
+
+**(b)** Analizar el comportamiento del polinomio cuando $m \to \infty$. ¿A qué función conocida converge $f(r)$ en ese límite? ¿Cómo se refleja esto en los coeficientes del polinomio de Taylor?
+
+```{python}
+
+import sympy as sp
+
+r = sp.Symbol('r')
+
+def obtener_coeficientes(m_val, n_max=4):
+    f = (1 + r/m_val)**m_val - 1
+    poly = sp.series(f, r, 0, n_max+1).removeO()
+    coeffs = [sp.Poly(poly, r).coeff_monomial(r**i) for i in range(1, n_max+1)]
+    return coeffs
+
+print(f"{'m':>10} | {'r':^8} | {'r^2':^8} | {'r^3':^8} | {'r^4':^8}")
+print("-" * 55)
+
+for m_val in [4, 12, 365, 1000000]:
+    c = obtener_coeficientes(m_val)
+    print(f"{m_val:10} | {float(c[0]):.4f} | {float(c[1]):.4f} | {float(c[2]):.4f} | {float(c[3]):.4f}")
+
+exp_coeffs = [1/sp.factorial(i) for i in range(1, 5)]
+print(f"{'Infinito':>10} | {float(exp_coeffs[0]):.4f} | {float(exp_coeffs[1]):.4f} | {float(exp_coeffs[2]):.4f} | {float(exp_coeffs[3]):.4f}")
+```
+
+**(c)** Determinar el intervalo $[0, r^*]$ donde $|f(r) - P_5(r)| < 10^{-5}$.
+Usar la cota del resto y verificar graficando el error.
+
+```{python}
+
+def f_real(r):
+    return (1 + r/12)**12 - 1
+
+def p5_taylor(r):
+    return r + (11/24)*r**2 + (55/432)*r**3 + (55/2304)*r**4 + (77/25920)*r**5
+
+error_func = lambda r: abs(f_real(r) - p5_taylor(r)) - 1e-5
+r_star = fsolve(error_func, 0.5)[0]
+
+print(f"El intervalo buscado es [0, {r_star:.4f}]")
+print(f"Tasa nominal máxima r*: {r_star*100:.2f}%")
+
+r_vals = np.linspace(0, 1.0, 500)
+errores = abs(f_real(r_vals) - p5_taylor(r_vals))
+
+plt.figure(figsize=(10, 6))
+plt.plot(r_vals, errores, label='Error Real', color='crimson', lw=2)
+plt.axhline(1e-5, color='black', linestyle='--', label='Umbral $10^{-5}$')
+plt.axvline(r_star, color='blue', linestyle=':', label=f'r* = {r_star:.4f}')
+
+plt.yscale('log') # Escala logarítmica para ver la precisión
+plt.title('Análisis del Error de la Tasa Efectiva ($P_5$)')
+plt.xlabel('Tasa Nominal (r)')
+plt.ylabel('Error Absoluto (Log)')
+plt.legend()
+plt.grid(True, which="both", alpha=0.3)
+plt.show()
+```
+
+**(d)** Implementar una función `taylor_tasa(r, m, n)` que calcule el polinomio de Taylor de grado $n$ para cualquier $m$. Comparar las aproximaciones para $m = 1, 2, 4, 12, 365$ en $r \in [0, 0.2]$ y discutir cuál requiere mayor grado $n$ para alcanzar la misma precisión.
+
+```{python}
+
+def taylor_tasa(r_val, m_val, n_grado):
+    r_sym = sp.Symbol('r')
+    f_sym = (1 + r_sym/m_val)**m_val - 1
+    poly_expr = f_sym.series(r_sym, 0, n_grado + 1).removeO()
+    poly_func = sp.lambdify(r_sym, poly_expr, 'numpy')
+    return poly_func(r_val)
+
+r_range = np.linspace(0, 0.2, 100)
+m_list = [1, 2, 4, 12, 365]
+n_fijo = 2 
+
+plt.figure(figsize=(10, 6))
+
+for m in m_list:
+    f_real = (1 + r_range/m)**m - 1
+    f_aprox = taylor_tasa(r_range, m, n_fijo)
+    error = np.abs(f_real - f_aprox)
+    plt.plot(r_range, error, label=f'Error m={m}')
+
+plt.yscale('log')
+plt.title(f'Error Absoluto del Polinomio de Taylor')
+plt.xlabel('Tasa Nominal (r)')
+plt.ylabel('Error Absoluto (Log)')
+plt.legend()
+plt.grid(True, which="both", alpha=0.3)
+plt.show()
+```
+
+:::
