@@ -596,3 +596,6 @@ plt.tight_layout()
 plt.show()
 ```
 
+# Conclusiones
+Para las actividades terciarias se observa como crece con los años, pero en 2020 sucede una pandemia y esta es donde los indicadores caen en gran medida para despues recuperarse, pero sin llegar a los niveles de crecimientos anteriormente vistos. 
+Para amazon se observa un crecimiento constante tambien, pero con una caída importante en 2020, aunque a diferencia de las actividades terciarias, amazon se recupera rápidamente y sigue creciendo, esto se debe a que amazon es una empresa de comercio electrónico y durante la pandemia muchas personas optaron por comprar en línea, lo que benefició a amazon.
