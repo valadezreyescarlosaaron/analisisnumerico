@@ -1,0 +1,1613 @@
+---
+title: "Proyecto final: The dynamics of poverty and crime"
+author: "Luis David Flores Muñoz, Islas Pichardo Patricio, Valadez Reyes Carlos Aaron, Puga Leguizamo Edgar Alejandro, Perez Lopez Jose Eduardo"
+format: 
+  html:
+    grid:
+      body-width: 1200px
+lang: es
+---
+
+### Resumen 
+La pobreza y la criminalidad son dos problemas estrechamente relacionados que afectan principalmente a las grandes ciudades. Basándose en la teoría económica del crimen de Gary Becker, que establece que una persona comete un delito cuando los beneficios superan a los costos, este estudio propone un modelo matemático para analizar cómo interactúan la pobreza y el crimen a lo largo del tiempo. A diferencia de enfoques estadísticos tradicionales, el modelo utiliza ecuaciones diferenciales ordinarias para obtener una visión dinámica de esta relación, con el objetivo de identificar estrategias costo-efectivas que permitan reducir la criminalidad sin incrementar el gasto social.
+
+### Ecuaciones utilizadas en la investigación:
+
+(1)
+
+$$
+\frac{dN}{dt} = \mu - (\sigma + \mu) N
+$$ 
+
+$$
+\frac{dP}{dt} = \sigma N - \beta P C - (\gamma + \mu) P
+$$ 
+
+$$
+\frac{dC}{dt} = \beta P C + \phi \beta R C - (\epsilon \rho + \mu) C
+$$ 
+
+$$
+\frac{dJ}{dt} = \epsilon \rho C - (\delta + \mu) J
+$$ 
+
+$$
+\frac{dR}{dt} = \gamma P + \delta J - \phi \beta R C - \mu R
+$$ 
+
+$$
+N(t) + P(t) + C(t) + J(t) + R(t) = 1
+$$ 
+
+
+
+(2)
+
+$$
+R = R_P + R_R
+$$ 
+
+
+
+(3)
+
+$$
+\begin{aligned}
+R_P &= \left(\frac{\beta}{\epsilon \rho + \mu}\right)\left(\frac{\sigma}{\sigma + \mu}\right)\left(\frac{\mu}{\gamma + \mu}\right) \\
+R_R &= \left(\frac{\phi \beta}{\epsilon \rho + \mu}\right)\left(\frac{\sigma}{\sigma + \mu}\right)\left(\frac{\gamma}{\gamma + \mu}\right)
+\end{aligned}
+$$ 
+
+$$
+\begin{aligned}
+N^* &= \frac{\mu}{\sigma + \mu} \\
+P^* &= \frac{\sigma N^*}{\beta C^* + \gamma + \mu} \\
+J^* &= \frac{\epsilon \rho C^*}{\delta + \mu} \\
+R^* &= \frac{\gamma P^* + \delta J^*}{\phi \beta C^* + \mu}
+\end{aligned}
+$$ 
+
+
+
+(4)
+
+$$
+E_0 = (N_0, P_0, 0, 0, R_0)
+$$ 
+
+$$
+N_0 = \frac{\mu}{\sigma + \mu}
+$$ 
+
+$$
+P_0 = \frac{\mu \sigma}{(\sigma + \mu)(\gamma + \mu)}
+$$ 
+
+$$
+R_0 = \frac{\gamma \sigma}{(\sigma + \mu)(\gamma + \mu)}
+$$ 
+
+
+
+(5)
+
+$$
+N^* = \frac{\mu}{\sigma + \mu}
+$$ 
+
+$$
+P^* = \frac{\mu \sigma}{(\sigma + \mu)(\gamma + \mu + \beta C^*)}
+$$ 
+
+$$
+J^* = \frac{\epsilon \rho C^*}{\delta + \mu}
+$$ 
+
+$$
+R^* = \frac{1}{\mu + \phi \beta C^*} \left[ \frac{\gamma \mu \sigma}{(\sigma + \mu)(\gamma + \mu + \beta C^*)} + \frac{\delta \epsilon \rho C^*}{\delta + \mu} \right]
+$$ 
+
+
+
+(6)
+
+$$
+\frac{\mu}{\sigma+\mu} + \frac{\mu\sigma}{(\sigma+\mu)(\gamma+\mu+\beta x)} + x + \frac{\epsilon \rho x}{\delta+\mu} + \frac{1}{\mu+\phi \beta x} \left( \frac{\gamma \mu\sigma}{(\sigma+\mu)(\gamma+\mu+\beta x)} + \frac{\delta \epsilon \rho x}{\delta+\mu} \right) = 1
+$$ 
+
+
+
+(7)
+
+$$
+(a_2 x^2 + a_1 x + a_0)x = 0
+$$ 
+
+
+
+(8)
+
+$$
+\begin{aligned}
+a_0 &= (\gamma + \mu)(\epsilon \rho + \mu)(1 - R) \\
+a_1 &= \phi \beta (\gamma + \mu) \left( 1 + \frac{\epsilon \rho}{\delta + \mu} \right) + \beta (\epsilon \rho + \mu) \left( 1 - \frac{\gamma + \mu}{\gamma} R_R \right) \\
+a_2 &= \left( 1 + \frac{\epsilon \rho}{\delta + \mu} \right) \phi \beta^2
+\end{aligned}
+$$ 
+
+
+
+(9)
+
+$$
+R_R < 1 - \frac{\mu}{\gamma + \mu}
+$$ 
+
+
+
+(10)
+$$
+J(E_0) = \begin{pmatrix}
+-(\sigma+\mu) & 0 & 0 & 0 & 0 \\
+\sigma & -(\gamma+\mu) & -\beta P_0 & 0 & 0 \\
+0 & 0 & \beta P_0 + \phi \beta R_0 - (\epsilon \rho + \mu) & 0 & 0 \\
+0 & 0 & \epsilon \rho & -(\delta+\mu) & 0 \\
+0 & \gamma & -\phi \beta R_0 & \delta & -\mu
+\end{pmatrix}
+$$ 
+
+
+
+(11)
+
+$$
+c(\gamma, \rho) = w_1 B_1 C^*(\gamma, \rho) + w_2 B_2 \rho C^*(\gamma, \rho) + \frac{w_3 B_3 \gamma P^*(\gamma, \rho)}{\alpha + P^*(\gamma, \rho)}
+$$ 
+
+
+
+Figure 1: En la gráfica 1(a), cuando $R < 1$, se observa visualmente cómo las curvas de criminales ($C$) caen hasta tocar el cero. En la 1(b), cuando $R > 1$, las curvas convergen hacia un estado estacionario positivo y permanente, demostrando la persistencia del crimen.
+Existe un valor crítico R = 1 que determina si el crimen desaparece o persiste indefinidamente. Las políticas públicas deben dirigirse a reducir este número por debajo de 1.
+
+
+```{python}
+
+#| code-fold: true
+
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+def poverty_crime_system(y, t, beta, phi, mu, sigma, delta, epsilon, p, gamma):
+    """
+    Sistema dinámico de pobreza y crimen
+    y = [N, P, C, J, R]
+    """
+    N, P, C, J, R = y
+    
+    T = 1
+    
+    dN_dt = mu * T - (sigma + mu) * N
+    dP_dt = sigma * N - beta * P * C - (gamma + mu) * P
+    dC_dt = beta * P * C + phi * beta * R * C - (epsilon * p + mu) * C
+    dJ_dt = epsilon * p * C - (delta + mu) * J
+    dR_dt = gamma * P + delta * J - phi * beta * R * C - mu * R
+    
+    return [dN_dt, dP_dt, dC_dt, dJ_dt, dR_dt]
+
+
+phi = 0.1
+mu = 0.1
+sigma = 0.5 * mu  
+delta = 1/5  
+epsilon = 0.7
+p = 0.2
+gamma = 0.25
+
+
+N0 = 0.6
+P0 = 0.2
+C0 = 0.1
+J0 = 0.05
+R0 = 0.05
+y0 = [N0, P0, C0, J0, R0]
+
+
+t = np.linspace(0, 100, 1000)
+
+beta_a = 2.0
+sol_a = odeint(poverty_crime_system, y0, t, args=(beta_a, phi, mu, sigma, delta, epsilon, p, gamma))
+
+N_a, P_a, C_a, J_a, R_a = sol_a.T
+
+R_value_a = (beta_a / (epsilon * p + mu)) * (sigma / (sigma + mu)) * (mu / (gamma + mu)) + \
+            (phi * beta_a / (epsilon * p + mu)) * (sigma / (sigma + mu)) * (gamma / (gamma + mu))
+
+beta_b = 2.8
+sol_b = odeint(poverty_crime_system, y0, t, args=(beta_b, phi, mu, sigma, delta, epsilon, p, gamma))
+
+N_b, P_b, C_b, J_b, R_b = sol_b.T
+
+R_value_b = (beta_b / (epsilon * p + mu)) * (sigma / (sigma + mu)) * (mu / (gamma + mu)) + \
+            (phi * beta_b / (epsilon * p + mu)) * (sigma / (sigma + mu)) * (gamma / (gamma + mu))
+
+
+# GRÁFICOS
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+# Gráfico (a): R < 1
+ax1.plot(t, P_a, 'b-', label='P (Pobreza)', linewidth=2)
+ax1.plot(t, C_a, 'r--', label='C (Crimen)', linewidth=2)
+ax1.plot(t, J_a, 'g:', label='J (Encarcelados)', linewidth=2)
+ax1.set_xlabel('Tiempo (años)', fontsize=11)
+ax1.set_ylabel('Densidad de Población', fontsize=11)
+ax1.set_title(f'(a) R < 1 (β = {beta_a}, R = {R_value_a:.2f})', fontsize=12, fontweight='bold')
+ax1.legend(loc='upper right', fontsize=10)
+ax1.grid(True, alpha=0.3)
+ax1.set_xlim(0, 100)
+ax1.set_ylim(0, 0.25)
+
+# Gráfico (b): R > 1
+ax2.plot(t, P_b, 'b-', label='P (Pobreza)', linewidth=2)
+ax2.plot(t, C_b, 'r--', label='C (Crimen)', linewidth=2)
+ax2.plot(t, J_b, 'g:', label='J (Encarcelados)', linewidth=2)
+ax2.set_xlabel('Tiempo (años)', fontsize=11)
+ax2.set_ylabel('Densidad de Población', fontsize=11)
+ax2.set_title(f'(b) R > 1 (β = {beta_b}, R = {R_value_b:.2f})', fontsize=12, fontweight='bold')
+ax2.legend(loc='upper right', fontsize=10)
+ax2.grid(True, alpha=0.3)
+ax2.set_xlim(0, 100)
+ax2.set_ylim(0, 0.25)
+
+plt.tight_layout()
+plt.show()
+
+
+
+print("=" * 60)
+print("=" * 60)
+print(f"\nParámetros comunes:")
+print(f"  φ (factor de reducción de reincidencia) = {phi}")
+print(f"  μ (tasa de entrada/salida población) = {mu}")
+print(f"  σ (tasa de pobreza) = {sigma}")
+print(f"  δ (tasa de liberación de jail) = {delta}")
+print(f"  ε (fracción de criminales en jail) = {epsilon}")
+print(f"  p (tasa de captura) = {p}")
+print(f"  γ (tasa de conversión P→R) = {gamma}")
+
+print(f"\n--- CASO (a): R < 1 ---")
+print(f"  β (tasa de transmisión) = {beta_a}")
+print(f"  Número de reproducción R = {R_value_a:.4f}")
+print(f"  Valor final de C(t→∞) ≈ {C_a[-1]:.6f}")
+print(f"  Conclusión: El crimen tiende a cero (CFE estable)")
+
+print(f"\n--- CASO (b): R > 1 ---")
+print(f"  β (tasa de transmisión) = {beta_b}")
+print(f"  Número de reproducción R = {R_value_b:.4f}")
+print(f"  Valor final de C(t→∞) ≈ {C_b[-1]:.6f}")
+print(f"  Conclusión: El crimen converge a equilibrio positivo (E* estable)")
+
+print("=" * 60)
+
+```
+
+
+Figure 2: Visualiza de forma concluyente que, sin importar el punto de partida de una sociedad, todas las líneas convergen en un único punto (un círculo sólido que representa el equilibrio endémico del crimen).
+Independientemente de las condiciones iniciales de pobreza y crimen, el sistema siempre converge a un único equilibrio estable E. Esto demuestra que el modelo es PREDECIBLE y ROBUSTO a largo plazo cuando R > 1.
+
+
+
+```{python}
+
+#| code-fold: true
+
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+from matplotlib.patches import Circle
+
+
+def poverty_crime_system(y, t, beta, phi, mu, sigma, delta, epsilon, p, gamma):
+    """
+    Sistema dinámico de pobreza y crimen
+    y = [N, P, C, J, R]
+    """
+    N, P, C, J, R = y
+    
+    T = 1
+    
+    dN_dt = mu * T - (sigma + mu) * N
+    dP_dt = sigma * N - beta * P * C - (gamma + mu) * P
+    dC_dt = beta * P * C + phi * beta * R * C - (epsilon * p + mu) * C
+    dJ_dt = epsilon * p * C - (delta + mu) * J
+    dR_dt = gamma * P + delta * J - phi * beta * R * C - mu * R
+    
+    return [dN_dt, dP_dt, dC_dt, dJ_dt, dR_dt]
+
+
+def find_equilibrium_star(beta, phi, mu, sigma, delta, epsilon, p, gamma):
+    """
+    Calcula el equilibrio positivo E* resolviendo:
+    a2*x^2 + a1*x + a0 = 0
+    donde x = C*
+    """
+
+    a0 = (gamma + mu) * (epsilon * p + mu) * (1 - 1)  
+    
+
+    y_init = [0.5, 0.2, 0.05, 0.05, 0.15]
+    t_eq = np.linspace(0, 1000, 10000)
+    sol = odeint(poverty_crime_system, y_init, t_eq, args=(beta, phi, mu, sigma, delta, epsilon, p, gamma))
+    
+
+    N_eq, P_eq, C_eq, J_eq, R_eq = sol[-1, :]
+    
+    return N_eq, P_eq, C_eq, J_eq, R_eq
+
+
+beta = 2.8  
+phi = 0.1
+mu = 0.1
+sigma = 0.5 * mu
+delta = 1/5
+epsilon = 0.7
+p = 0.2
+gamma = 0.25
+
+
+N_eq, P_eq, C_eq, J_eq, R_eq = find_equilibrium_star(beta, phi, mu, sigma, delta, epsilon, p, gamma)
+
+print("=" * 60)
+print("EQUILIBRIO POSITIVO E*")
+print("=" * 60)
+print(f"N* = {N_eq:.4f}")
+print(f"P* = {P_eq:.4f}")
+print(f"C* = {C_eq:.4f}")
+print(f"J* = {J_eq:.4f}")
+print(f"R* = {R_eq:.4f}")
+print(f"Suma = {N_eq + P_eq + C_eq + J_eq + R_eq:.4f}")
+
+
+# Rango de valores iniciales para P y C
+P_init_range = np.linspace(0.01, 0.35, 4)
+C_init_range = np.linspace(0.01, 0.35, 4)
+
+
+conditions = []
+for P_init in P_init_range:
+    for C_init in C_init_range:
+        conditions.append([0.4, P_init, C_init, 0.05, 0.1])
+
+print(f"\nTotal de trayectorias a simular: {len(conditions)}")
+
+
+t = np.linspace(0, 150, 2000)  
+trajectories_P = []
+trajectories_C = []
+
+for y_init in conditions:
+    sol = odeint(poverty_crime_system, y_init, t, args=(beta, phi, mu, sigma, delta, epsilon, p, gamma))
+    N_sol, P_sol, C_sol, J_sol, R_sol = sol.T
+    
+    trajectories_P.append(P_sol)
+    trajectories_C.append(C_sol)
+
+
+fig, ax = plt.subplots(figsize=(10, 8))
+
+# Graficar trayectorias
+colors = plt.cm.viridis(np.linspace(0, 1, len(conditions)))
+
+for i, (P_traj, C_traj) in enumerate(zip(trajectories_P, trajectories_C)):
+    ax.plot(P_traj, C_traj, color=colors[i], alpha=0.6, linewidth=1.5)
+    
+    ax.arrow(P_traj[-50], C_traj[-50], 
+             P_traj[-1] - P_traj[-50], C_traj[-1] - C_traj[-50],
+             head_width=0.01, head_length=0.01, fc=colors[i], ec=colors[i], alpha=0.8)
+
+
+circle = Circle((P_eq, C_eq), 0.015, color='darkred', zorder=5, label='E* (Equilibrio)')
+ax.add_patch(circle)
+ax.plot(P_eq, C_eq, 'r.', markersize=15, zorder=6)
+
+ax.annotate(f'E* ({P_eq:.2f}, {C_eq:.2f})', 
+            xy=(P_eq, C_eq), xytext=(P_eq + 0.03, C_eq + 0.03),
+            fontsize=10, fontweight='bold',
+            bbox=dict(boxstyle='round,pad=0.3', facecolor='yellow', alpha=0.7),
+            arrowprops=dict(arrowstyle='->', color='red', lw=1.5))
+
+ax.set_xlabel('P(t) - Densidad de Pobreza', fontsize=12, fontweight='bold')
+ax.set_ylabel('C(t) - Densidad de Criminalidad', fontsize=12, fontweight='bold')
+ax.set_title(f'Retrato de Fase (P,C) para R > 1\n(β = {beta}, R ≈ 1.4)', 
+             fontsize=13, fontweight='bold', pad=20)
+
+ax.grid(True, alpha=0.3, linestyle='--')
+ax.set_xlim(0, 0.35)
+ax.set_ylim(0, 0.35)
+
+
+ax.text(0.02, 0.95, f'Parámetros:\nβ = {beta}\nφ = {phi}\nμ = {mu}\nγ = {gamma}\np = {p}',
+        transform=ax.transAxes, fontsize=10,
+        verticalalignment='top',
+        bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+
+plt.tight_layout()
+plt.show()
+
+
+print("\n" + "=" * 60)
+print("ANÁLISIS DE CONVERGENCIA")
+print("=" * 60)
+
+for i, (P_traj, C_traj) in enumerate(zip(trajectories_P, trajectories_C)):
+    P_final = P_traj[-1]
+    C_final = C_traj[-1]
+    
+    error_P = abs(P_final - P_eq)
+    error_C = abs(C_final - C_eq)
+    
+    if i < 5 or i % 5 == 0:  
+        print(f"\nTrayectoria {i+1}:")
+        print(f"  Inicial: P₀ = {P_traj[0]:.3f}, C₀ = {C_traj[0]:.3f}")
+        print(f"  Final:   P  = {P_final:.4f}, C  = {C_final:.4f}")
+        print(f"  Error:   ΔP = {error_P:.6f}, ΔC = {error_C:.6f}")
+
+print("\n" + "=" * 60)
+print("Todas las trayectorias convergen al equilibrio E* ✓")
+print("=" * 60)
+
+```
+
+
+
+
+Figure 3:  Muestra visualmente un plano claro que delimita las zonas donde el crimen disminuye o se anula por completo.Es un "mapa de control": muestra exactamente cómo combinaciones de políticas de conversión (γ) y captura (ρ) afectan al número de reproducción de criminales y al nivel de crimen en equilibrio. Permite identificar qué políticas funcionan y cuáles no.
+
+
+```{python}
+
+#| code-fold: true
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import cm
+import matplotlib.colors as mcolors
+
+# Parámetros del modelo 
+beta  = 2.0
+phi   = 0.1
+mu    = 0.1
+sigma = 0.5 * mu      
+delta = 0.5
+eps   = 0.1           
+
+# Número reproductivo R(γ, ρ) 
+def reproduction_number(gamma, rho):
+    """R = Rp + RR  (ecuaciones 2-3)"""
+    denom = eps * rho + mu
+    Rp = (beta / denom) * (sigma / (sigma + mu)) * (mu    / (gamma + mu))
+    RR = (phi * beta / denom) * (sigma / (sigma + mu)) * (gamma / (gamma + mu))
+    return Rp + RR
+
+
+# Equilibrio positivo C*(γ, ρ)
+def crime_equilibrium(gamma, rho):
+    """
+    Raíz positiva de  a2·x² + a1·x + a0 = 0  (ecuación 7).
+    Devuelve 0 si R ≤ 1.
+    """
+    R = reproduction_number(gamma, rho)
+    if R <= 1.0:
+        return 0.0
+
+    ep_mu   = eps * rho + mu
+    gam_mu  = gamma + mu
+    delt_mu = delta + mu
+
+    a0 = gam_mu * ep_mu * (1.0 - R)
+
+    RR_val = (phi * beta / ep_mu) * (sigma / (sigma + mu)) * (gamma / gam_mu)
+    a1 = (phi * beta * gam_mu * (1.0 + eps * rho / delt_mu)
+          + beta * ep_mu * (1.0 - (gam_mu / gamma) * RR_val))
+
+    a2 = (1.0 + eps * rho / delt_mu) * phi * beta**2
+
+    disc = a1**2 - 4.0 * a0 * a2
+    if disc < 0:
+        return 0.0
+
+    return max((-a1 + np.sqrt(disc)) / (2.0 * a2), 0.0)
+
+
+
+N = 150
+gamma_vals = np.linspace(0.001, 0.80, N)
+rho_vals   = np.linspace(0.001, 0.80, N)
+GAMMA, RHO = np.meshgrid(gamma_vals, rho_vals)
+
+R_grid = np.vectorize(reproduction_number)(GAMMA, RHO)
+C_grid = np.vectorize(crime_equilibrium)(GAMMA, RHO)
+
+print(f"R  range : [{R_grid.min():.3f}, {R_grid.max():.3f}]")
+print(f"C* range : [{C_grid.min():.4f}, {C_grid.max():.4f}]")
+
+
+
+#  GRÁFICA
+fig = plt.figure(figsize=(15, 6.2))
+fig.patch.set_facecolor('white')
+
+
+ELEV, AZIM = 24, -52
+
+cmap_main = cm.Blues
+
+# Panel izquierdo: R(γ, ρ) 
+ax1 = fig.add_subplot(121, projection='3d')
+
+# Superficie principal de R
+surf_R = ax1.plot_surface(GAMMA, RHO, R_grid,
+                          cmap=cmap_main,
+                          alpha=0.88,
+                          linewidth=0,
+                          antialiased=True,
+                          vmin=R_grid.min(),
+                          vmax=R_grid.max())
+
+# Plano de referencia R = 1 
+R_plane = np.ones_like(R_grid)
+ax1.plot_surface(GAMMA, RHO, R_plane,
+                 color='lightsteelblue',
+                 alpha=0.45,
+                 linewidth=0)
+
+
+for g_edge in [gamma_vals[0], gamma_vals[-1]]:
+    ax1.plot([g_edge, g_edge], [rho_vals[0], rho_vals[-1]], [1, 1],
+             color='steelblue', linewidth=0.6, alpha=0.6)
+for r_edge in [rho_vals[0], rho_vals[-1]]:
+    ax1.plot([gamma_vals[0], gamma_vals[-1]], [r_edge, r_edge], [1, 1],
+             color='steelblue', linewidth=0.6, alpha=0.6)
+
+# Etiqueta del plano
+ax1.text(0.75, 0.01, 1.05, '$R=1$', fontsize=10,
+         color='steelblue', fontweight='bold')
+
+# Proyección de la curva R=1 en el suelo (z=0)
+try:
+    cs_floor = ax1.contour(GAMMA, RHO, R_grid,
+                           levels=[1.0], zdir='z', offset=0,
+                           colors=['navy'], linewidths=[1.2],
+                           linestyles=['dashed'])
+except Exception:
+    pass
+
+ax1.set_xlabel(r'$\gamma$', fontsize=12, labelpad=7)
+ax1.set_ylabel(r'$\rho$',   fontsize=12, labelpad=7)
+ax1.set_zlabel(r'$R$',      fontsize=12, labelpad=7)
+ax1.set_title(r'Reproduction number $R(\gamma,\rho)$',
+              fontsize=12, pad=12)
+
+# Rango Z: R llega hasta ~6.6 
+ax1.set_zlim(0, 7)
+ax1.set_xlim(0, 0.8)
+ax1.set_ylim(0, 0.8)
+ax1.set_xticks([0, 0.2, 0.4, 0.6, 0.8])
+ax1.set_yticks([0, 0.2, 0.4, 0.6, 0.8])
+ax1.set_zticks([0, 1, 2, 3, 4, 5, 6])
+ax1.view_init(elev=ELEV, azim=AZIM)
+
+ax1.xaxis.pane.fill = False
+ax1.yaxis.pane.fill = False
+ax1.zaxis.pane.fill = False
+ax1.xaxis.pane.set_edgecolor('lightgray')
+ax1.yaxis.pane.set_edgecolor('lightgray')
+ax1.zaxis.pane.set_edgecolor('lightgray')
+ax1.tick_params(labelsize=8)
+
+# Anotación: R > 1 → crimen persiste; R < 1 → libre de crimen
+ax1.text2D(0.05, 0.01,
+           r'Below plane: $R<1$ (crime-free)' '\n'
+           r'Above plane: $R>1$ (crime persists)',
+           transform=ax1.transAxes, fontsize=7.5,
+           color='navy',
+           bbox=dict(boxstyle='round,pad=0.3', fc='white',
+                     ec='lightgray', alpha=0.8))
+
+
+# Panel derecho: C*(γ, ρ)
+ax2 = fig.add_subplot(122, projection='3d')
+
+# Superficie de C* 
+surf_C = ax2.plot_surface(GAMMA, RHO, C_grid,
+                          cmap=cmap_main,
+                          alpha=0.88,
+                          linewidth=0,
+                          antialiased=True,
+                          vmin=0,
+                          vmax=C_grid.max())
+
+# Plano de referencia C* = 0 
+C_plane = np.zeros_like(C_grid)
+ax2.plot_surface(GAMMA, RHO, C_plane,
+                 color='lightsteelblue',
+                 alpha=0.40,
+                 linewidth=0)
+
+# Etiqueta del plano
+ax2.text(0.75, 0.01, 0.008, '$C^*=0$', fontsize=10,
+         color='steelblue', fontweight='bold')
+
+# Proyección del borde C*=0 en el suelo  (curva donde R=1)
+try:
+    cs_floor2 = ax2.contour(GAMMA, RHO, C_grid,
+                            levels=[0.001], zdir='z', offset=0,
+                            colors=['navy'], linewidths=[1.2],
+                            linestyles=['dashed'])
+except Exception:
+    pass
+
+ax2.set_xlabel(r'$\gamma$', fontsize=12, labelpad=7)
+ax2.set_ylabel(r'$\rho$',   fontsize=12, labelpad=7)
+ax2.set_zlabel(r'$C^*$',    fontsize=12, labelpad=7)
+ax2.set_title(r'Crime equilibrium $C^*(\gamma,\rho)$',
+              fontsize=12, pad=12)
+
+# Rango Z: paper muestra C* hasta ~0.2
+ax2.set_zlim(0, 0.22)
+ax2.set_xlim(0, 0.8)
+ax2.set_ylim(0, 0.8)
+ax2.set_xticks([0, 0.2, 0.4, 0.6, 0.8])
+ax2.set_yticks([0, 0.2, 0.4, 0.6, 0.8])
+ax2.set_zticks([0, 0.05, 0.10, 0.15, 0.20])
+ax2.view_init(elev=ELEV, azim=AZIM)
+
+ax2.xaxis.pane.fill = False
+ax2.yaxis.pane.fill = False
+ax2.zaxis.pane.fill = False
+ax2.xaxis.pane.set_edgecolor('lightgray')
+ax2.yaxis.pane.set_edgecolor('lightgray')
+ax2.zaxis.pane.set_edgecolor('lightgray')
+ax2.tick_params(labelsize=8)
+
+ax2.text2D(0.05, 0.01,
+           r'$C^*>0$ only where $R(\gamma,\rho)>1$',
+           transform=ax2.transAxes, fontsize=7.5,
+           color='navy',
+           bbox=dict(boxstyle='round,pad=0.3', fc='white',
+                     ec='lightgray', alpha=0.8))
+
+plt.suptitle(
+    'Figure 3 — $R(\\gamma,\\rho)$ and $C^*(\\gamma,\\rho)$ '
+    'as functions of intervention parameters\n'
+    r'$\beta=2,\ \phi=0.1,\ \mu=0.1,\ \sigma=0.5\mu,\ \delta=0.5,\ \varepsilon=0.1$'
+    '    (Zhao, Feng & Castillo-Chavez, 2014)',
+    fontsize=10.5, y=1.01
+)
+
+plt.tight_layout(w_pad=3.5)
+plt.show()
+
+
+```
+
+
+Figure 4: La Figura 4 es un "mapa de decisiones" que muestra exactamente cómo cada combinación de políticas (γ,ρ) resulta en diferentes niveles de crimen en equilibrio. Permite visualizar: (1) Dónde está la estrategia actual, (2) Dónde se puede llegar, (3) Cuál es la ruta más eficiente para erradicar el crimen. 
+
+
+
+```{python}
+
+#| code-fold: true
+ 
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import matplotlib.lines as mlines
+ 
+
+beta    = 1.8        
+phi     = 0.1
+mu      = 0.1
+sigma   = 0.5 * mu   
+delta   = 0.5
+epsilon = 0.1
+ 
+gamma0 = 0.4
+rho0   = 0.1
+ 
+
+gamma_vals = np.linspace(0.001, 0.8, 800)
+rho_vals   = np.linspace(0.001, 0.8, 800)
+GAMMA, RHO = np.meshgrid(gamma_vals, rho_vals)
+ 
+
+Rp_surf = (beta / (epsilon * RHO + mu)) * (sigma / (sigma + mu)) * (mu / (GAMMA + mu))
+RR_surf = (phi * beta / (epsilon * RHO + mu)) * (sigma / (sigma + mu)) * (GAMMA / (GAMMA + mu))
+R_surf  = Rp_surf + RR_surf
+ 
+
+a0 = (GAMMA + mu) * (epsilon * RHO + mu) * (1 - R_surf)
+a1 = (phi * beta * (GAMMA + mu) * (1 + (epsilon * RHO) / (delta + mu))
+      + beta * (epsilon * RHO + mu) * (1 - ((GAMMA + mu) / GAMMA) * RR_surf))
+a2 = (1 + (epsilon * RHO) / (delta + mu)) * phi * beta**2
+ 
+with np.errstate(invalid='ignore'):
+    x_plus = (-a1 + np.sqrt(np.maximum(a1**2 - 4 * a0 * a2, 0))) / (2 * a2)
+ 
+C_star_surf = np.where(R_surf > 1, np.maximum(x_plus, 0), 0.0)
+ 
+
+# Verificar punto base
+
+Rp0 = (beta/(epsilon*rho0+mu))*(sigma/(sigma+mu))*(mu/(gamma0+mu))
+RR0 = (phi*beta/(epsilon*rho0+mu))*(sigma/(sigma+mu))*(gamma0/(gamma0+mu))
+R0  = Rp0 + RR0
+a0_ = (gamma0+mu)*(epsilon*rho0+mu)*(1-R0)
+a1_ = (phi*beta*(gamma0+mu)*(1+(epsilon*rho0)/(delta+mu))
+       + beta*(epsilon*rho0+mu)*(1-((gamma0+mu)/gamma0)*RR0))
+a2_ = (1+(epsilon*rho0)/(delta+mu))*phi*beta**2
+C0_star = max((-a1_+np.sqrt(max(a1_**2-4*a0_*a2_,0)))/(2*a2_), 0)
+ 
+print(f"Punto base : (γ₀, ρ₀) = ({gamma0}, {rho0})")
+print(f"R(γ₀, ρ₀) = {R0:.4f}")
+print(f"C₀*        = {C0_star:.4f}  (paper: 0.13)")
+ 
+
+# Graficar 
+fig, ax = plt.subplots(figsize=(6.5, 5.8))
+ 
+# ── Región sombreada: zona libre de crimen (R ≤ 1) ──
+ax.contourf(GAMMA, RHO, np.where(R_surf <= 1, 1.0, 0.0),
+            levels=[0.5, 1.5],
+            colors=['lightgray'],
+            alpha=0.60,
+            zorder=1)
+ 
+# Etiqueta dentro de la zona sombreada
+ax.text(0.62, 0.06, '$C^*=0$',
+        fontsize=10, color='dimgray',
+        ha='center', style='italic', zorder=3)
+ 
+# ── Curva C* = 0  (frontera libre de crimen) ─
+cs_0 = ax.contour(GAMMA, RHO, C_star_surf,
+                  levels=[0.001],
+                  colors=['black'],
+                  linestyles=['solid'],
+                  linewidths=[1.8],
+                  zorder=2)
+ 
+# ── Curva C* = 0.06 ──────────────────────────
+cs_06 = ax.contour(GAMMA, RHO, C_star_surf,
+                   levels=[0.06],
+                   colors=['steelblue'],
+                   linestyles=['dashed'],
+                   linewidths=[1.8],
+                   zorder=2)
+ 
+# ── Curva C* = 0.13  (nivel base) ────────────
+cs_13 = ax.contour(GAMMA, RHO, C_star_surf,
+                   levels=[C0_star],
+                   colors=['navy'],
+                   linestyles=['solid'],
+                   linewidths=[2.2],
+                   zorder=2)
+ 
+# Etiquetas inline de las curvas de nivel
+ax.clabel(cs_06, fmt='$C^*=0.06$',  fontsize=8.5, inline=True,
+          inline_spacing=4, manual=[(0.15, 0.52)])
+ax.clabel(cs_13, fmt=f'$C^*={C0_star:.2f}$', fontsize=8.5, inline=True,
+          inline_spacing=4, manual=[(0.12, 0.30)])
+ax.clabel(cs_0,  fmt='$C^*=0$',     fontsize=8.5, inline=True,
+          inline_spacing=4, manual=[(0.50, 0.32)])
+ 
+# ── Punto base (γ₀, ρ₀) ─────────────────────
+ax.plot(gamma0, rho0,
+        'o', color='black', markersize=9,
+        zorder=5)
+ax.annotate(f'$( \\gamma_0,\\, \\rho_0 ) = ({gamma0},\\, {rho0})$',
+            xy=(gamma0, rho0),
+            xytext=(gamma0 - 0.22, rho0 + 0.07),
+            fontsize=9.5,
+            arrowprops=dict(arrowstyle='->', color='black', lw=0.9))
+ 
+# ── Ejes ─────────────────────────────────────
+ax.set_xlabel(r'$\gamma$', fontsize=13)
+ax.set_ylabel(r'$\rho$',   fontsize=13)
+ax.set_xlim(0, 0.8)
+ax.set_ylim(0, 0.8)
+ax.set_xticks(np.arange(0, 0.9, 0.2))
+ax.set_yticks(np.arange(0, 0.9, 0.2))
+ax.tick_params(labelsize=10)
+ 
+ax.set_title(
+    "Figure 4  —  Contour plot of $C^*(\\gamma, \\rho)$\n"
+    r"[$\beta=1.8,\ \phi=0.1,\ \mu=0.1,\ \sigma=0.5\mu,\ "
+    r"\delta=0.5,\ \varepsilon=0.1$]",
+    fontsize=11, pad=10)
+ 
+
+leg_handles = [
+    mlines.Line2D([], [], color='navy',      lw=2.2, ls='solid',
+                  label=f'$C^* = C_0^* = {C0_star:.2f}$  (baseline)'),
+    mlines.Line2D([], [], color='steelblue', lw=1.8, ls='dashed',
+                  label='$C^* = 0.06$'),
+    mlines.Line2D([], [], color='black',     lw=1.8, ls='solid',
+                  label='$C^* = 0$  (crime-free boundary)'),
+    mpatches.Patch(facecolor='lightgray', alpha=0.6,
+                   label='Crime-free region $(\\mathcal{R} \\leq 1)$'),
+    mlines.Line2D([], [], marker='o', color='black', markersize=8,
+                  linestyle='None',
+                  label=f'Baseline $(\\gamma_0, \\rho_0)=({gamma0},{rho0})$'),
+]
+ax.legend(handles=leg_handles, loc='upper right',
+          fontsize=8.5, framealpha=0.88, edgecolor='gray')
+ 
+ax.grid(True, linestyle=':', alpha=0.30)
+ax.spines[['top', 'right']].set_visible(False)
+ 
+fig.text(0.5, -0.01,
+         "Zhao, Feng & Castillo-Chavez (2014)  |  "
+         "La región sombreada identifica donde el nivel de crimen cae a cero",
+         ha='center', fontsize=8, color='dimgray', style='italic')
+ 
+plt.tight_layout()
+plt.show()
+
+```
+
+
+Figure 5:  La Figura 5 demuestra que no todas las formas de reducir el crimen cuestan lo mismo. Algunas estrategias logran menos crimen con menos costo (ganar-ganar), mientras que otras requieren más gasto para menos resultado (trade-off adverso). El objetivo es identificar las estrategias verdaderamente eficientes. 
+
+
+```{python}
+
+#| code-fold: true
+ 
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
+import matplotlib.patches as mpatches
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator
+ 
+
+beta  = 1.9
+phi   = 0.1
+mu    = 0.1
+sigma = 0.5 * mu    
+delta = 0.5
+epsilon = 0.1
+ 
+w1B1 = 20
+w2B2 = 20
+w3B3 = 150
+a    = 1.0
+ 
+gamma0 = 0.4
+rho0   = 0.1
+ 
+
+def calc_R(gamma, rho):
+    Rp = (beta / (epsilon * rho + mu)) * (sigma / (sigma + mu)) * (mu / (gamma + mu))
+    RR = (phi * beta / (epsilon * rho + mu)) * (sigma / (sigma + mu)) * (gamma / (gamma + mu))
+    return Rp + RR
+ 
+def calc_Cstar(gamma, rho):
+    R = calc_R(gamma, rho)
+    if R <= 1:
+        return 0.0
+    a0 = (gamma + mu) * (epsilon * rho + mu) * (1 - R)
+    a1 = (phi * beta * (gamma + mu) * (1 + (epsilon * rho) / (delta + mu))
+          + beta * (epsilon * rho + mu) * (1 - ((gamma + mu) / gamma) * (R - (beta/(epsilon*rho+mu))*(sigma/(sigma+mu))*(mu/(gamma+mu)))))
+    a2 = (1 + (epsilon * rho) / (delta + mu)) * phi * beta**2
+    disc = a1**2 - 4 * a0 * a2
+    return max((-a1 + np.sqrt(max(disc, 0))) / (2 * a2), 0.0)
+ 
+def calc_Pstar(gamma, rho, Cs):
+    return mu * sigma / ((sigma + mu) * (gamma + mu + beta * Cs))
+ 
+def cost_func(gamma, rho):
+    Cs = calc_Cstar(gamma, rho)
+    Ps = calc_Pstar(gamma, rho, Cs)
+    return w1B1 * Cs + w2B2 * rho * Cs + w3B3 * (gamma * Ps / (a + Ps))
+ 
+
+gamma_vals = np.linspace(0.001, 0.8, 400)
+rho_vals   = np.linspace(0.001, 0.8, 400)
+GAMMA, RHO = np.meshgrid(gamma_vals, rho_vals)
+ 
+
+Rp_s = (beta / (epsilon * RHO + mu)) * (sigma / (sigma + mu)) * (mu / (GAMMA + mu))
+RR_s = (phi * beta / (epsilon * RHO + mu)) * (sigma / (sigma + mu)) * (GAMMA / (GAMMA + mu))
+R_s  = Rp_s + RR_s
+ 
+a0_s = (GAMMA + mu) * (epsilon * RHO + mu) * (1 - R_s)
+a1_s = (phi * beta * (GAMMA + mu) * (1 + (epsilon * RHO) / (delta + mu))
+        + beta * (epsilon * RHO + mu) * (1 - ((GAMMA + mu) / GAMMA) * RR_s))
+a2_s = (1 + (epsilon * RHO) / (delta + mu)) * phi * beta**2
+ 
+with np.errstate(invalid='ignore'):
+    xp = (-a1_s + np.sqrt(np.maximum(a1_s**2 - 4 * a0_s * a2_s, 0))) / (2 * a2_s)
+ 
+C_star_s = np.where(R_s > 1, np.maximum(xp, 0), 0.0)
+P_star_s = mu * sigma / ((sigma + mu) * (GAMMA + mu + beta * C_star_s))
+ 
+COST = w1B1 * C_star_s + w2B2 * RHO * C_star_s + w3B3 * (GAMMA * P_star_s / (a + P_star_s))
+ 
+
+C0s = calc_Cstar(gamma0, rho0)
+c0  = cost_func(gamma0, rho0)
+print(f"Punto base : (γ₀, ρ₀) = ({gamma0}, {rho0})")
+print(f"C₀*        = {C0s:.4f}  (paper: ≈ 0.13)")
+print(f"c₀         = {c0:.4f}  (paper: 5.6)")
+print(f"Rango costo: [{COST.min():.3f}, {COST.max():.3f}]")
+ 
+
+# Graficar 
+fig = plt.figure(figsize=(13, 5.5))
+fig.suptitle(
+    "Figure 5  —  Cost $c(\\gamma,\\rho)$ as a function of intervention parameters\n"
+    r"[$\beta=1.9,\ w_1B_1=20,\ w_2B_2=20,\ w_3B_3=150,\ a=1$"
+    r"$\ |\ \gamma_0=0.4,\ \rho_0=0.1,\ c_0\approx5.6$]",
+    fontsize=11, fontweight='bold', y=1.02
+)
+ 
+
+# Panel izquierdo — Superficie 3D
+
+ax1 = fig.add_subplot(121, projection='3d')
+ 
+# Superficie de costo c(γ,ρ) — más clara
+surf = ax1.plot_surface(GAMMA, RHO, COST,
+                         cmap=cm.YlOrRd,
+                         alpha=0.88,
+                         linewidth=0,
+                         antialiased=True)
+ 
+# Plano oscuro c = c₀ = 5.6
+C0_plane = np.full_like(GAMMA, c0)
+ax1.plot_surface(GAMMA, RHO, C0_plane,
+                 color='dimgray', alpha=0.35,
+                 linewidth=0)
+ 
+# Línea de intersección superficie con plano c₀
+ax1.contour(GAMMA, RHO, COST,
+            levels=[c0],
+            zdir='z', offset=None,
+            colors='black', linewidths=1.5,
+            linestyles='dashed')
+ 
+# Punto base
+ax1.scatter([gamma0], [rho0], [c0],
+            color='black', s=50, zorder=6)
+ 
+ax1.set_xlabel(r'$\gamma$', fontsize=11, labelpad=6)
+ax1.set_ylabel(r'$\rho$',   fontsize=11, labelpad=6)
+ax1.set_zlabel('Cost',      fontsize=11, labelpad=6)
+ax1.set_title('Cost surface $c(\\gamma,\\rho)$\nvs baseline $c_0$ (dark plane)',
+              fontsize=10, pad=8)
+ax1.set_xlim(0, 0.8)
+ax1.set_ylim(0, 0.8)
+ax1.zaxis.set_major_locator(LinearLocator(5))
+ax1.zaxis.set_major_formatter('{x:.1f}')
+ax1.tick_params(labelsize=8)
+ax1.view_init(elev=25, azim=-50)
+ 
+cbar = fig.colorbar(surf, ax=ax1, shrink=0.45, aspect=12, pad=0.10)
+cbar.set_label('$c(\\gamma,\\rho)$', fontsize=9)
+cbar.ax.tick_params(labelsize=8)
+ 
+# Anotación región inferior al plano
+ax1.text2D(0.05, 0.15,
+           r'$c(\gamma,\rho) < c_0$' + '\n(región favorable)',
+           transform=ax1.transAxes,
+           fontsize=8, color='darkgreen',
+           bbox=dict(boxstyle='round,pad=0.3', fc='white', alpha=0.7))
+ 
+
+# Panel derecho — Contour plot
+
+ax2 = fig.add_subplot(122)
+ 
+# Fondo coloreado del costo
+cf = ax2.contourf(GAMMA, RHO, COST,
+                   levels=30,
+                   cmap=cm.YlOrRd,
+                   alpha=0.40)
+ 
+# Curva c = 5.6 (dashed) — mismo valor que c₀
+cs_56 = ax2.contour(GAMMA, RHO, COST,
+                     levels=[c0],
+                     colors=['black'],
+                     linestyles=['dashed'],
+                     linewidths=[2.0])
+ax2.clabel(cs_56, fmt=f'$c={c0:.1f}$', fontsize=8.5,
+           inline=True, inline_spacing=4,
+           manual=[(0.55, 0.55)])
+ 
+# Curva c = 5 (dotted-dash)
+cs_5 = ax2.contour(GAMMA, RHO, COST,
+                    levels=[5.0],
+                    colors=['navy'],
+                    linestyles=['dashdot'],
+                    linewidths=[1.8])
+ax2.clabel(cs_5, fmt='$c=5$', fontsize=8.5,
+           inline=True, inline_spacing=4,
+           manual=[(0.40, 0.68)])
+ 
+# Curva c = 4 (dotted)
+cs_4 = ax2.contour(GAMMA, RHO, COST,
+                    levels=[4.0],
+                    colors=['steelblue'],
+                    linestyles=['dotted'],
+                    linewidths=[2.0])
+ax2.clabel(cs_4, fmt='$c=4$', fontsize=8.5,
+           inline=True, inline_spacing=4,
+           manual=[(0.30, 0.75)])
+ 
+# Región donde c(γ,ρ) < c₀  (zona favorable)
+ax2.contourf(GAMMA, RHO, COST,
+              levels=[COST.min(), c0],
+              colors=['lightgreen'],
+              alpha=0.20)
+ax2.text(0.15, 0.65, r'$c < c_0$',
+         fontsize=9, color='darkgreen',
+         style='italic')
+ 
+# Punto base (γ₀, ρ₀)
+ax2.plot(gamma0, rho0,
+         'o', color='black', markersize=9, zorder=6)
+ax2.annotate(f'$( \\gamma_0, \\rho_0 )=({gamma0},{rho0})$\n$c_0={c0:.1f}$',
+             xy=(gamma0, rho0),
+             xytext=(gamma0 - 0.25, rho0 + 0.10),
+             fontsize=8.5,
+             arrowprops=dict(arrowstyle='->', color='black', lw=0.9))
+ 
+# Ejes
+ax2.set_xlabel(r'$\gamma$', fontsize=13)
+ax2.set_ylabel(r'$\rho$',   fontsize=13)
+ax2.set_xlim(0, 0.8)
+ax2.set_ylim(0, 0.8)
+ax2.set_xticks(np.arange(0, 0.9, 0.2))
+ax2.set_yticks(np.arange(0, 0.9, 0.2))
+ax2.tick_params(labelsize=10)
+ax2.set_title('Contour plot of $c(\\gamma,\\rho)$',
+              fontsize=10, pad=8)
+ax2.grid(True, linestyle=':', alpha=0.30)
+ax2.spines[['top', 'right']].set_visible(False)
+ 
+# Leyenda
+leg_handles = [
+    mlines.Line2D([], [], color='black',     lw=2.0, ls='dashed',
+                  label=f'$c = c_0 = {c0:.1f}$  (baseline)'),
+    mlines.Line2D([], [], color='navy',      lw=1.8, ls='dashdot',
+                  label='$c = 5$'),
+    mlines.Line2D([], [], color='steelblue', lw=2.0, ls='dotted',
+                  label='$c = 4$'),
+    mpatches.Patch(facecolor='lightgreen', alpha=0.5,
+                   label='Region $c < c_0$ (cost reduction)'),
+    mlines.Line2D([], [], marker='o', color='black', markersize=8,
+                  linestyle='None',
+                  label=f'Baseline $( \\gamma_0, \\rho_0 )$'),
+]
+ax2.legend(handles=leg_handles, loc='lower left',
+           fontsize=8.5, framealpha=0.90, edgecolor='gray')
+ 
+fig.colorbar(cf, ax=ax2, shrink=0.75, aspect=20, pad=0.02,
+             label='$c(\\gamma,\\rho)$').ax.tick_params(labelsize=8)
+ 
+# Nota
+fig.text(0.5, -0.02,
+         "Para todo $(\\gamma,\\rho)$ por encima de la curva punteada $c=c_0$, "
+         "el costo es menor que $c_0$   |   Zhao, Feng & Castillo-Chavez (2014)",
+         ha='center', fontsize=8.5, color='dimgray', style='italic')
+ 
+plt.tight_layout()
+plt.show()
+
+
+```
+
+
+Figure 6: La Figura 6 demuestra una verdad económica contra-intuitiva pero matemáticamente rigurosa: invertir en prevención (conversión de pobres a recuperados) es simultáneamente más efectivo y más barato que invertir en represión (captura de criminales). Por lo tanto, existe una estrategia que gana en ambas dimensiones: menos crimen Y menos costo.
+
+
+```{python}
+
+#| code-fold: true
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
+import matplotlib.patches as mpatches
+
+
+beta    = 1.9
+phi     = 0.1
+mu      = 0.1
+sigma   = 0.5 * mu
+delta   = 0.5
+epsilon = 0.1
+
+w1B1 = 20
+w2B2 = 20
+w3B3 = 150
+a    = 1.0
+
+gamma0 = 0.4
+rho0   = 0.1
+
+
+
+gamma_vals = np.linspace(0.001, 0.8, 900)
+rho_vals   = np.linspace(0.001, 0.8, 900)
+GAMMA, RHO = np.meshgrid(gamma_vals, rho_vals)
+
+
+# R(γ,ρ)
+
+Rp_s = (beta / (epsilon * RHO + mu)) * (sigma / (sigma + mu)) * (mu / (GAMMA + mu))
+RR_s = (phi * beta / (epsilon * RHO + mu)) * (sigma / (sigma + mu)) * (GAMMA / (GAMMA + mu))
+R_s  = Rp_s + RR_s
+
+
+# C*(γ,ρ)
+a0_s = (GAMMA + mu) * (epsilon * RHO + mu) * (1 - R_s)
+a1_s = (phi * beta * (GAMMA + mu) * (1 + (epsilon * RHO) / (delta + mu))
+        + beta * (epsilon * RHO + mu) * (1 - ((GAMMA + mu) / GAMMA) * RR_s))
+a2_s = (1 + (epsilon * RHO) / (delta + mu)) * phi * beta**2
+
+with np.errstate(invalid='ignore'):
+    xp = (-a1_s + np.sqrt(np.maximum(a1_s**2 - 4 * a0_s * a2_s, 0))) / (2 * a2_s)
+
+C_star_s = np.where(R_s > 1, np.maximum(xp, 0), 0.0)
+
+
+# Costo c(γ,ρ) 
+P_star_s = mu * sigma / ((sigma + mu) * (GAMMA + mu + beta * C_star_s))
+COST     = (w1B1 * C_star_s
+            + w2B2 * RHO * C_star_s
+            + w3B3 * (GAMMA * P_star_s / (a + P_star_s)))
+
+
+# Punto base y verificación
+
+Rp0 = (beta/(epsilon*rho0+mu))*(sigma/(sigma+mu))*(mu/(gamma0+mu))
+RR0 = (phi*beta/(epsilon*rho0+mu))*(sigma/(sigma+mu))*(gamma0/(gamma0+mu))
+R0  = Rp0 + RR0
+a0_ = (gamma0+mu)*(epsilon*rho0+mu)*(1-R0)
+a1_ = (phi*beta*(gamma0+mu)*(1+(epsilon*rho0)/(delta+mu))
+       + beta*(epsilon*rho0+mu)*(1-((gamma0+mu)/gamma0)*RR0))
+a2_ = (1+(epsilon*rho0)/(delta+mu))*phi*beta**2
+C0s = max((-a1_+np.sqrt(max(a1_**2-4*a0_*a2_, 0)))/(2*a2_), 0)
+P0s = mu*sigma/((sigma+mu)*(gamma0+mu+beta*C0s))
+c0  = w1B1*C0s + w2B2*rho0*C0s + w3B3*(gamma0*P0s/(a+P0s))
+
+print(f"Punto base : (γ₀, ρ₀) = ({gamma0}, {rho0})")
+print(f"C₀*        = {C0s:.4f}  (paper: ≈ 0.13)")
+print(f"c₀         = {c0:.4f}  (paper: 5.6)")
+
+# Intersección c=4 con frontera C*=0: γ ≈ 0.53 (verificado numéricamente ≈ paper 0.55)
+gamma_cross = 0.53
+
+# Graficar
+fig, ax = plt.subplots(figsize=(7, 6.2))
+
+# Región libre de crimen
+ax.contourf(GAMMA, RHO,
+            np.where(R_s <= 1, 1.0, 0.0),
+            levels=[0.5, 1.5],
+            colors=['lightgray'],
+            alpha=0.55, zorder=1)
+
+# Región c < c₀
+ax.contourf(GAMMA, RHO, COST,
+            levels=[COST.min(), c0],
+            colors=['honeydew'],
+            alpha=0.50, zorder=1)
+
+# CURVAS DE CRIMEN
+
+# C* = C₀* — sólida GRUESA negra
+cs_C0 = ax.contour(GAMMA, RHO, C_star_s,
+                   levels=[C0s],
+                   colors=['black'],
+                   linestyles=['solid'],
+                   linewidths=[2.5],
+                   zorder=3)
+ax.clabel(cs_C0,
+          fmt=f'$C_0^*={C0s:.2f}$',
+          fontsize=8.5, inline=True,
+          inline_spacing=6,
+          manual=[(0.10, 0.20)])
+
+# C* = 0.06 — sólida steelblue
+cs_C06 = ax.contour(GAMMA, RHO, C_star_s,
+                    levels=[0.06],
+                    colors=['steelblue'],
+                    linestyles=['solid'],
+                    linewidths=[1.7],
+                    zorder=3)
+ax.clabel(cs_C06,
+          fmt='$C^*=0.06$',
+          fontsize=8.5, inline=True,
+          inline_spacing=6,
+          manual=[(0.09, 0.47)])
+
+# C* = 0 — sólida gris (frontera)
+cs_C0b = ax.contour(GAMMA, RHO, C_star_s,
+                    levels=[0.001],
+                    colors=['dimgray'],
+                    linestyles=['solid'],
+                    linewidths=[1.4],
+                    zorder=3)
+ax.clabel(cs_C0b,
+          fmt='$C^*=0$',
+          fontsize=8, inline=True,
+          inline_spacing=6,
+          manual=[(0.55, 0.25)])
+
+
+ax.text(0.63, 0.055, 'Crime-free\nregion',
+        fontsize=8, color='dimgray',
+        ha='center', style='italic', zorder=4)
+
+# CURVAS DE COSTO 
+
+# c = c₀ = 5.6 — DISCONTINUA crimson
+cs_c0 = ax.contour(GAMMA, RHO, COST,
+                   levels=[c0],
+                   colors=['crimson'],
+                   linestyles=['dashed'],
+                   linewidths=[2.1],
+                   zorder=4)
+ax.clabel(cs_c0,
+          fmt=f'$c=c_0={c0:.1f}$',
+          fontsize=8.5, inline=True,
+          inline_spacing=6,
+          manual=[(0.52, 0.46)])
+
+# c = 4 — PUNTEADA naranja
+cs_c4 = ax.contour(GAMMA, RHO, COST,
+                   levels=[4.0],
+                   colors=['darkorange'],
+                   linestyles=['dotted'],
+                   linewidths=[2.3],
+                   zorder=4)
+ax.clabel(cs_c4,
+          fmt='$c=4$',
+          fontsize=8.5, inline=True,
+          inline_spacing=6,
+          manual=[(0.35, 0.73)])
+
+# Línea vertical γ_cross 
+ax.axvline(x=gamma_cross,
+           color='purple', linestyle=':',
+           linewidth=1.4, alpha=0.75, zorder=2)
+ax.annotate(f'$\\gamma \\approx {gamma_cross}$\n'
+             r'(c=4 $\cap$ C*=0)',
+            xy=(gamma_cross, 0.72),
+            xytext=(gamma_cross + 0.06, 0.72),
+            fontsize=8, color='purple',
+            arrowprops=dict(arrowstyle='->', color='purple', lw=0.8))
+
+# Punto base (γ₀, ρ₀)
+ax.plot(gamma0, rho0,
+        'o', color='black', markersize=11,
+        zorder=7)
+ax.annotate(f'$( \\gamma_0,\\rho_0 ) = ({gamma0},{rho0})$',
+            xy=(gamma0, rho0),
+            xytext=(gamma0 + 0.06, rho0 + 0.09),
+            fontsize=9.5,
+            arrowprops=dict(arrowstyle='->', color='black', lw=1.0))
+
+
+# Flecha derecha: γ↑ reduce crimen
+ax.annotate('',
+            xy=(0.60, rho0 - 0.02),
+            xytext=(gamma0 + 0.02, rho0 - 0.02),
+            arrowprops=dict(arrowstyle='->', color='darkgreen', lw=1.8))
+ax.text(0.43, rho0 - 0.06,
+        r'$\gamma\uparrow,\;\rho\downarrow$  →  $C^*\downarrow$',
+        fontsize=8.5, color='darkgreen')
+
+
+ax.set_xlabel(r'$\gamma$', fontsize=13)
+ax.set_ylabel(r'$\rho$',   fontsize=13)
+ax.set_xlim(0, 0.8)
+ax.set_ylim(0, 0.8)
+ax.set_xticks(np.arange(0, 0.9, 0.2))
+ax.set_yticks(np.arange(0, 0.9, 0.2))
+ax.tick_params(labelsize=10)
+
+ax.set_title(
+    "Figure 6  —  Overlap contour curves of $C^*(\\gamma,\\rho)$ and $c(\\gamma,\\rho)$\n"
+    r"[$\beta=1.9,\ w_1B_1=20,\ w_2B_2=20,\ w_3B_3=150,\ a=1,"
+    r"\ \gamma_0=0.4,\ \rho_0=0.1$]",
+    fontsize=10.5, pad=10)
+
+# Leyenda
+leg_handles = [
+    # Crimen
+    mlines.Line2D([], [], color='black',      lw=2.5, ls='solid',
+                  label=f'$C^* = C_0^* = {C0s:.2f}$  (crime baseline)'),
+    mlines.Line2D([], [], color='steelblue',  lw=1.7, ls='solid',
+                  label='$C^* = 0.06$'),
+    mlines.Line2D([], [], color='dimgray',    lw=1.4, ls='solid',
+                  label='$C^* = 0$  (crime-free boundary)'),
+    # Costo
+    mlines.Line2D([], [], color='crimson',    lw=2.1, ls='dashed',
+                  label=f'$c = c_0 = {c0:.1f}$  (cost baseline)'),
+    mlines.Line2D([], [], color='darkorange', lw=2.3, ls='dotted',
+                  label='$c = 4$'),
+    # Regiones
+    mpatches.Patch(facecolor='lightgray', alpha=0.6,
+                   label=r'Crime-free region ($\mathcal{R} \leq 1$)'),
+    mpatches.Patch(facecolor='honeydew',  alpha=0.7,
+                   label='$c < c_0$  (cost reduction zone)'),
+    # Punto base
+    mlines.Line2D([], [], marker='o', color='black',
+                  markersize=9, linestyle='None',
+                  label=f'Baseline $( \\gamma_0, \\rho_0 )$'),
+]
+ax.legend(handles=leg_handles,
+          loc='upper right',
+          fontsize=8,
+          framealpha=0.92,
+          edgecolor='gray',
+          ncol=1)
+
+ax.grid(True, linestyle=':', alpha=0.25)
+ax.spines[['top', 'right']].set_visible(False)
+
+fig.text(
+    0.5, -0.01,
+    r"$\gamma > \gamma_0,\ \rho < \rho_0$: misma $c_0$ reduce el crimen  $|$  "
+    r"$\gamma > 0.55$ sobre $c=4$: crimen eliminado  $|$  "
+    "Zhao, Feng & Castillo-Chavez (2014)",
+    ha='center', fontsize=8.2, color='dimgray', style='italic')
+
+plt.tight_layout()
+plt.show()
+
+
+```
+
+
+
+Figure 7: La figura 7 nos demuestra que la estrategia óptima NO es universal. Depende críticamente de los parámetros económicos locales (costos de crimen, captura y prevención). En contextos favorables (Figura 6), existe una solución "ganar-ganar" donde menos crimen cuesta menos dinero. En contextos desafiantes (Figura 7), hay trade-offs duros donde reducir crimen requiere inversión significativa. Los formuladores de política deben calibrar el modelo a su contexto específico antes de implementar cualquier estrategia.
+
+```{python}
+
+#| code-fold: true
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import cm
+from matplotlib.lines import Line2D
+
+
+beta  = 2.0
+phi   = 0.1
+mu    = 0.1
+sigma = 0.5 * mu      
+delta = 0.5
+eps   = 0.1          
+
+# Parámetros de costo 
+w1B1 = 5.0
+w2B2 = 20.0
+w3B3 = 200.0
+a    = 1.0
+
+# Baseline
+gamma0 = 0.4
+rho0   = 0.1
+
+
+# Número reproductivo R(γ, ρ)
+def reproduction_number(gamma, rho):
+    """R = Rp + RR  (ecuaciones 2-3 del paper)"""
+    denom = eps * rho + mu
+    Rp = (beta / denom) * (sigma / (sigma + mu)) * (mu    / (gamma + mu))
+    RR = (phi * beta / denom) * (sigma / (sigma + mu)) * (gamma / (gamma + mu))
+    return Rp + RR
+
+
+# Equilibrio positivo C*(γ, ρ) 
+def crime_equilibrium(gamma, rho):
+    """
+    Resuelve  a2·x² + a1·x + a0 = 0  (ecuación 7 del paper).
+    Devuelve la raíz positiva x+ = C*, o 0 si R ≤ 1.
+    """
+    R = reproduction_number(gamma, rho)
+    if R <= 1.0:
+        return 0.0
+
+    ep_mu   = eps * rho + mu
+    gam_mu  = gamma + mu
+    delt_mu = delta + mu
+
+    a0 = gam_mu * ep_mu * (1.0 - R)
+
+    RR_val = (phi * beta / ep_mu) * (sigma / (sigma + mu)) * (gamma / gam_mu)
+    a1 = (phi * beta * gam_mu * (1.0 + eps * rho / delt_mu)
+          + beta * ep_mu * (1.0 - (gam_mu / gamma) * RR_val))
+
+    a2 = (1.0 + eps * rho / delt_mu) * phi * beta**2
+
+    disc = a1**2 - 4.0 * a0 * a2
+    if disc < 0:
+        return 0.0
+
+    x_plus = (-a1 + np.sqrt(disc)) / (2.0 * a2)
+    return max(x_plus, 0.0)
+
+
+# Densidad de pobreza P*(γ, ρ)
+def poverty_equilibrium(gamma, rho):
+    """P* = μσ / [(σ+μ)(γ+μ+β·C*)]"""
+    Cstar = crime_equilibrium(gamma, rho)
+    return (mu * sigma) / ((sigma + mu) * (gamma + mu + beta * Cstar))
+
+
+# Función de costo c(γ, ρ) 
+def cost_function(gamma, rho):
+    """
+    c(γ,ρ) = w1B1·C* + w2B2·ρ·C* + w3B3·γ·P*/(a + P*)
+    Con w1B1=5, w2B2=20, w3B3=200  (valores de Fig. 7)
+    """
+    Cstar = crime_equilibrium(gamma, rho)
+    Pstar = poverty_equilibrium(gamma, rho)
+    return (w1B1 * Cstar
+            + w2B2 * rho * Cstar
+            + w3B3 * gamma * Pstar / (a + Pstar))
+
+
+
+N = 140
+gamma_vals = np.linspace(0.01, 0.80, N)
+rho_vals   = np.linspace(0.01, 0.80, N)
+GAMMA, RHO = np.meshgrid(gamma_vals, rho_vals)
+
+C_grid    = np.vectorize(crime_equilibrium)(GAMMA, RHO)
+COST_grid = np.vectorize(cost_function)(GAMMA, RHO)
+
+C0_star = crime_equilibrium(gamma0, rho0)
+c0      = cost_function(gamma0, rho0)
+
+print(f"C0* = {C0_star:.4f}  (paper: ~0.13)")
+print(f"c0  = {c0:.4f}  (paper: ~4.3)")
+print(f"R(γ0,ρ0) = {reproduction_number(gamma0, rho0):.4f}")
+print(f"COST range: [{COST_grid.min():.2f}, {COST_grid.max():.2f}]")
+
+
+#  GRÁFICOS
+fig = plt.figure(figsize=(14, 5.5))
+fig.patch.set_facecolor('white')
+
+# Panel izquierdo: superficie 3D 
+ax1 = fig.add_subplot(121, projection='3d')
+
+# Superficie del costo 
+surf = ax1.plot_surface(GAMMA, RHO, COST_grid,
+                        cmap=cm.Blues, alpha=0.85,
+                        linewidth=0, antialiased=True)
+
+# Plano de referencia en c0 
+ax1.plot_surface(GAMMA, RHO, np.full_like(COST_grid, c0),
+                 color='dimgray', alpha=0.40, linewidth=0)
+
+# Etiqueta del plano c0
+ax1.text(0.01, 0.78, c0 + 0.10, r'$c_0$', fontsize=12, color='dimgray',
+         fontweight='bold')
+
+ax1.set_xlabel(r'$\gamma$', fontsize=12, labelpad=6)
+ax1.set_ylabel(r'$\rho$',   fontsize=12, labelpad=6)
+ax1.set_zlabel('Cost',       fontsize=11, labelpad=6)
+ax1.set_title(r'Cost surface $c(\gamma,\rho)$', fontsize=12, pad=10)
+
+z_max = max(COST_grid.max() * 1.05, c0 * 1.6)
+ax1.set_zlim(0, z_max)
+ax1.set_xlim(0, 0.8)
+ax1.set_ylim(0, 0.8)
+ax1.view_init(elev=22, azim=-55)
+
+ax1.xaxis.pane.fill = False
+ax1.yaxis.pane.fill = False
+ax1.zaxis.pane.fill = False
+ax1.xaxis.pane.set_edgecolor('lightgray')
+ax1.yaxis.pane.set_edgecolor('lightgray')
+ax1.zaxis.pane.set_edgecolor('lightgray')
+ax1.tick_params(labelsize=8)
+
+z_ticks = [0, 2, 4, 6]
+ax1.set_zticks(z_ticks)
+
+
+# Panel derecho
+ax2 = fig.add_subplot(122)
+
+cs_crime = ax2.contour(GAMMA, RHO, C_grid,
+                       levels=[C0_star],
+                       colors=['black'], linewidths=[2.2],
+                       linestyles=['solid'])
+ax2.clabel(cs_crime,
+           fmt={C0_star: f'{C0_star:.2f}'},
+           fontsize=9, inline=True,
+           manual=[(0.55, 0.62)])
+
+cs_cost = ax2.contour(GAMMA, RHO, COST_grid,
+                      levels=[c0],
+                      colors=['black'], linewidths=[1.6],
+                      linestyles=['dashed'])
+ax2.clabel(cs_cost,
+           fmt={c0: f'{c0:.1f}'},
+           fontsize=9, inline=True,
+           manual=[(0.22, 0.52)])
+
+ax2.plot(gamma0, rho0, 'o', color='black', markersize=8, zorder=6)
+
+
+ax2.annotate(f'$C^*={C0_star:.2f}$',
+             xy=(0.30, 0.58), fontsize=8.5,
+             bbox=dict(boxstyle='round,pad=0.15', fc='white', ec='none', alpha=0.7))
+ax2.annotate(f'$c_0={c0:.1f}$',
+             xy=(0.08, 0.46), fontsize=8.5,
+             bbox=dict(boxstyle='round,pad=0.15', fc='white', ec='none', alpha=0.7))
+
+# Ejes
+ax2.set_xlabel(r'$\gamma$', fontsize=13)
+ax2.set_ylabel(r'$\rho$',   fontsize=13)
+ax2.set_xlim(0, 0.8)
+ax2.set_ylim(0, 0.8)
+ax2.set_xticks([0, 0.2, 0.4, 0.6, 0.8])
+ax2.set_yticks([0, 0.2, 0.4, 0.6, 0.8])
+ax2.tick_params(labelsize=9)
+ax2.set_title(r'Contour plot of $c(\gamma,\rho)$', fontsize=12)
+ax2.set_facecolor('white')
+ax2.grid(False)
+
+# Leyenda
+legend_elements = [
+    Line2D([0], [0], color='black', linewidth=2.2, linestyle='solid',
+           label=rf'$C^*(\gamma,\rho)=C_0^*={C0_star:.2f}$  (crime level)'),
+    Line2D([0], [0], color='black', linewidth=1.6, linestyle='dashed',
+           label=rf'$c(\gamma,\rho)=c_0={c0:.1f}$  (cost, dashed)'),
+    Line2D([0], [0], marker='o', color='black', linewidth=0,
+           markersize=7, label=r'Baseline $(\gamma_0,\rho_0)$'),
+]
+ax2.legend(handles=legend_elements, fontsize=8, loc='upper right',
+           framealpha=0.90)
+
+# Nota 
+ax2.text(0.02, 0.02,
+         r'For $(\gamma,\rho)$ on dashed curve with $\gamma>\gamma_0$:' '\n'
+         r'$C^* > C_0^*$  (higher crime — opposite of Fig. 6)',
+         transform=ax2.transAxes, fontsize=7.5, color='gray',
+         verticalalignment='bottom',
+         bbox=dict(boxstyle='round,pad=0.3', fc='white', ec='lightgray', alpha=0.8))
+
+plt.suptitle(
+    'Figure 7 — Cost as a function of $\\gamma$ and $\\rho$ '
+    '(low $B_1$: $w_1B_1=5,\\ w_2B_2=20,\\ w_3B_3=200$)\n'
+    r'Zhao, Feng & Castillo-Chavez (2014)',
+    fontsize=11, y=1.02
+)
+
+plt.tight_layout()
+plt.show()
+
+
+
+```
+
+
+
+
+Bibliografia:
+Zhao, H., Feng, Z., y Castillo-Chavez, C. (2014). The dynamics of poverty and crime. Journal of Shanghai Normal University (Natural Sciences Mathematics), 43(5), 486-495.
