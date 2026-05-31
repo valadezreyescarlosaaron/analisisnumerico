@@ -1,0 +1,2564 @@
+---
+title: "Tarea 5. Diferenciación e integración numérica."
+author: "Carlos Aaron Valadez Reyes"
+format: 
+  html:
+    grid: 
+      body-width: 1000px
+editor: visual
+jupyter: python3
+---
+
+Importamos packages y funciones necesarias:
+
+```{python}
+#| code-fold: true
+
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+
+import plotly.graph_objects as go
+from scipy.differentiate import derivative
+import numdifftools as nd
+from scipy import integrate
+import pandas as pd
+import plotly.express as px
+```
+
+# Ejercicio 1.
+
+Para cada una de las siguientes funciones:
+
+-   Realiza la respectiva gráfica en el intervalo dado.
+
+-   Compara las gráficas de las derivadas aproximadas de la función `derivative` de `Scipy`, con dos tamaños de paso utilizando la función `nd.Derivative` (con `order =2` y `order = 4`, con las opciones de `method`: `forward`, `backward`, `central`) y la derivada *exacta* en tal intervalo.
+
+-   Compara las gráficas de las segundas derivadas aproximadas con dos tamaños de paso utilizando la función `nd.Derivative` y la segunda derivada *exacta* en tal intervalo.
+
+-   Realiza las gráficas de los errores absolutos en cada caso.
+
+a)  $f(x)=e^{2x}-cos 2x$, $x\in [0,2]$
+
+```{python}
+
+#| code-fold: true
+
+try:
+    from scipy.misc import derivative
+except ImportError:
+    try:
+        from scipy import derivative
+    except ImportError:
+        
+        def derivative(func, x, dx=1.0, n=1):
+            if n == 1:
+                return (func(x + dx) - func(x - dx)) / (2 * dx)
+            elif n == 2:
+                return (func(x + dx) - 2 * func(x) + func(x - dx)) / (dx ** 2)
+            else:
+                raise ValueError("Para órdenes superiores use numdifftools.")
+
+
+# DEFINICIÓN DE LA FUNCIÓN Y SUS DERIVADAS EXACTAS 
+
+# f(x) = e^{2x} - cos(2x)
+f = lambda x: np.exp(2*x) - np.cos(2*x)
+
+# Primera derivada exacta
+f_d1_exacta = lambda x: 2*np.exp(2*x) + 2*np.sin(2*x)
+
+# Segunda derivada exacta
+f_d2_exacta = lambda x: 4*np.exp(2*x) + 4*np.cos(2*x)
+
+# Configuración del intervalo [0, 2]
+x_vals = np.linspace(0, 2, 200)
+
+h1 = 0.1
+h2 = 0.01
+
+
+# CÁLCULO DE PRIMERAS DERIVADAS APROXIMADAS Y ERRORES
+
+y_d1_exacta = f_d1_exacta(x_vals)
+
+# Derivada usando la función compatible de SciPy
+d1_scipy_h1 = derivative(f, x_vals, dx=h1, n=1)
+d1_scipy_h2 = derivative(f, x_vals, dx=h2, n=1)
+
+# Aproximaciones con numdifftools 
+d1_central_o2_h1 = np.array([nd.Derivative(f, n=1, method='central', step=h1)(x) for x in x_vals])
+d1_central_o2_h2 = np.array([nd.Derivative(f, n=1, method='central', step=h2)(x) for x in x_vals])
+
+d1_forward_o4_h1 = np.array([nd.Derivative(f, n=1, method='forward', step=h1)(x) for x in x_vals])
+d1_forward_o4_h2 = np.array([nd.Derivative(f, n=1, method='forward', step=h2)(x) for x in x_vals])
+
+d1_backward_o2_h1 = np.array([nd.Derivative(f, n=1, method='backward', step=h1)(x) for x in x_vals])
+d1_backward_o2_h2 = np.array([nd.Derivative(f, n=1, method='backward', step=h2)(x) for x in x_vals])
+
+
+# CÁLCULO DE SEGUNDAS DERIVADAS APROXIMADAS Y ERRORES
+
+y_d2_exacta = f_d2_exacta(x_vals)
+
+# Segunda derivada con numdifftools (n=2)
+d2_central_h1 = np.array([nd.Derivative(f, n=2, method='central', step=h1)(x) for x in x_vals])
+d2_central_h2 = np.array([nd.Derivative(f, n=2, method='central', step=h2)(x) for x in x_vals])
+
+d2_forward_h1 = np.array([nd.Derivative(f, n=2, method='forward', step=h1)(x) for x in x_vals])
+d2_backward_h2 = np.array([nd.Derivative(f, n=2, method='backward', step=h2)(x) for x in x_vals])
+
+
+# SUBPLOTS Y GRÁFICAS
+
+plt.figure(figsize=(16, 12))
+plt.suptitle(r"Análisis Numérico para $f(x) = e^{2x} - \cos(2x)$ en $[0, 2]$", fontsize=16, fontweight='bold')
+
+# Gráfica de la función original
+plt.subplot(3, 2, 1)
+plt.plot(x_vals, f(x_vals), color='purple', lw=2.5, label='$f(x)$')
+plt.title("Gráfica de la Función Original")
+plt.xlabel("x")
+plt.ylabel("f(x)")
+plt.grid(True)
+plt.legend()
+
+# Comparación de Primeras Derivadas
+plt.subplot(3, 2, 3)
+plt.plot(x_vals, y_d1_exacta, 'k-', lw=3, label='Exacta')
+plt.plot(x_vals, d1_scipy_h1, '--', label=f'SciPy (h={h1})')
+plt.plot(x_vals, d1_central_o2_h2, 'r.', markersize=4, label=f'nd Central (h={h2})')
+plt.plot(x_vals, d1_forward_o4_h1, 'g-.', label=f'nd Forward (h={h1})')
+plt.plot(x_vals, d1_backward_o2_h2, 'b:', label=f'nd Backward (h={h2})')
+plt.title("Comparación: Primera Derivada")
+plt.xlabel("x")
+plt.grid(True)
+plt.legend(fontsize=9)
+
+# Errores Absolutos de la Primera Derivada
+plt.subplot(3, 2, 4)
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_scipy_h1), label=f'Error SciPy (h={h1})')
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_central_o2_h2), label=f'Error Central (h={h2})')
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_forward_o4_h1), label=f'Error Forward (h={h1})')
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_backward_o2_h2), label=f'Error Backward (h={h2})')
+plt.title("Error Absoluto: Primera Derivada")
+plt.xlabel("x")
+plt.yscale('log')
+plt.grid(True, which="both", ls="--")
+plt.legend(fontsize=9)
+
+# Comparación de Segundas Derivadas 
+plt.subplot(3, 2, 5)
+plt.plot(x_vals, y_d2_exacta, 'k-', lw=3, label='Exacta')
+plt.plot(x_vals, d2_central_h1, 'orange', linestyle='--', label=f'nd Central (h={h1})')
+plt.plot(x_vals, d2_central_h2, 'cyan', linestyle=':', label=f'nd Central (h={h2})')
+plt.plot(x_vals, d2_forward_h1, 'magenta', linestyle='-.', label=f'nd Forward (h={h1})')
+plt.title("Comparación: Segunda Derivada")
+plt.xlabel("x")
+plt.grid(True)
+plt.legend(fontsize=9)
+
+# Errores Absolutos de la Segunda Derivada 
+plt.subplot(3, 2, 6)
+plt.plot(x_vals, np.abs(y_d2_exacta - d2_central_h1), 'orange', label=f'Error Central (h={h1})')
+plt.plot(x_vals, np.abs(y_d2_exacta - d2_central_h2), 'cyan', label=f'Error Central (h={h2})')
+plt.plot(x_vals, np.abs(y_d2_exacta - d2_forward_h1), 'magenta', label=f'Error Forward (h={h1})')
+plt.title("Error Absoluto: Segunda Derivada")
+plt.xlabel("x")
+plt.yscale('log')
+plt.grid(True, which="both", ls="--")
+plt.legend(fontsize=9)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+
+
+b)  $f(x)=log(x+2)-(x+1)^2$, $x\in [0,5]$
+
+```{python}
+
+#| code-fold: true
+
+try:
+    from scipy.misc import derivative
+except ImportError:
+    try:
+        from scipy import derivative
+    except ImportError:
+        
+        def derivative(func, x, dx=1.0, n=1):
+            if n == 1:
+                return (func(x + dx) - func(x - dx)) / (2 * dx)
+            elif n == 2:
+                return (func(x + dx) - 2 * func(x) + func(x - dx)) / (dx ** 2)
+            else:
+                raise ValueError("Para órdenes superiores use numdifftools.")
+
+
+# DEFINICIÓN DE LA FUNCIÓN Y SUS DERIVADAS EXACTAS 
+
+
+# f(x) = log(x+2) - (x+1)^2
+f = lambda x: np.log(x + 2) - (x + 1)**2
+
+# Primera derivada exacta: f'(x) = 1/(x+2) - 2(x+1)
+f_d1_exacta = lambda x: 1 / (x + 2) - 2 * (x + 1)
+
+# Segunda derivada exacta: f''(x) = -1/(x+2)^2 - 2
+f_d2_exacta = lambda x: -1 / (x + 2)**2 - 2
+
+# Configuración del intervalo [0, 5] según el enunciado
+x_vals = np.linspace(0, 5, 200)
+
+h1 = 0.1
+h2 = 0.01
+
+
+# CÁLCULO DE PRIMERAS DERIVADAS APROXIMADAS Y ERRORES
+
+y_d1_exacta = f_d1_exacta(x_vals)
+
+# Derivada usando SciPy 
+d1_scipy_h1 = derivative(f, x_vals, dx=h1, n=1)
+d1_scipy_h2 = derivative(f, x_vals, dx=h2, n=1)
+
+# Aproximaciones con numdifftools (n=1)
+d1_central_o2_h1 = np.array([nd.Derivative(f, n=1, method='central', step=h1)(x) for x in x_vals])
+d1_central_o2_h2 = np.array([nd.Derivative(f, n=1, method='central', step=h2)(x) for x in x_vals])
+
+d1_forward_o4_h1 = np.array([nd.Derivative(f, n=1, method='forward', step=h1)(x) for x in x_vals])
+d1_forward_o4_h2 = np.array([nd.Derivative(f, n=1, method='forward', step=h2)(x) for x in x_vals])
+
+d1_backward_o2_h1 = np.array([nd.Derivative(f, n=1, method='backward', step=h1)(x) for x in x_vals])
+d1_backward_o2_h2 = np.array([nd.Derivative(f, n=1, method='backward', step=h2)(x) for x in x_vals])
+
+
+# CÁLCULO DE SEGUNDAS DERIVADAS APROXIMADAS Y ERRORES
+
+y_d2_exacta = f_d2_exacta(x_vals)
+
+# Segunda derivada con numdifftools (n=2)
+d2_central_h1 = np.array([nd.Derivative(f, n=2, method='central', step=h1)(x) for x in x_vals])
+d2_central_h2 = np.array([nd.Derivative(f, n=2, method='central', step=h2)(x) for x in x_vals])
+
+d2_forward_h1 = np.array([nd.Derivative(f, n=2, method='forward', step=h1)(x) for x in x_vals])
+d2_backward_h2 = np.array([nd.Derivative(f, n=2, method='backward', step=h2)(x) for x in x_vals])
+
+
+# SUBPLOTS Y GRÁFICAS
+plt.figure(figsize=(16, 12))
+plt.suptitle(r"Análisis Numérico para $f(x) = \log(x+2) - (x+1)^2$ en $[0, 5]$", fontsize=16, fontweight='bold')
+
+# Gráfica de la función original
+plt.subplot(3, 2, 1)
+plt.plot(x_vals, f(x_vals), color='darkblue', lw=2.5, label='$f(x)$')
+plt.title("Gráfica de la Función Original")
+plt.xlabel("x")
+plt.ylabel("f(x)")
+plt.grid(True)
+plt.legend()
+
+# Comparación de Primeras Derivadas
+plt.subplot(3, 2, 3)
+plt.plot(x_vals, y_d1_exacta, 'k-', lw=3, label='Exacta')
+plt.plot(x_vals, d1_scipy_h1, '--', label=f'SciPy (h={h1})')
+plt.plot(x_vals, d1_central_o2_h2, 'r.', markersize=4, label=f'nd Central (h={h2})')
+plt.plot(x_vals, d1_forward_o4_h1, 'g-.', label=f'nd Forward (h={h1})')
+plt.plot(x_vals, d1_backward_o2_h2, 'b:', label=f'nd Backward (h={h2})')
+plt.title("Comparación: Primera Derivada")
+plt.xlabel("x")
+plt.grid(True)
+plt.legend(fontsize=9)
+
+# Errores Absolutos de la Primera Derivada
+plt.subplot(3, 2, 4)
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_scipy_h1), label=f'Error SciPy (h={h1})')
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_central_o2_h2), label=f'Error Central (h={h2})')
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_forward_o4_h1), label=f'Error Forward (h={h1})')
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_backward_o2_h2), label=f'Error Backward (h={h2})')
+plt.title("Error Absoluto: Primera Derivada")
+plt.xlabel("x")
+plt.yscale('log')
+plt.grid(True, which="both", ls="--")
+plt.legend(fontsize=9)
+
+# Comparación de Segundas Derivadas 
+plt.subplot(3, 2, 5)
+plt.plot(x_vals, y_d2_exacta, 'k-', lw=3, label='Exacta')
+plt.plot(x_vals, d2_central_h1, 'orange', linestyle='--', label=f'nd Central (h={h1})')
+plt.plot(x_vals, d2_central_h2, 'cyan', linestyle=':', label=f'nd Central (h={h2})')
+plt.plot(x_vals, d2_forward_h1, 'magenta', linestyle='-.', label=f'nd Forward (h={h1})')
+plt.title("Comparación: Segunda Derivada")
+plt.xlabel("x")
+plt.grid(True)
+plt.legend(fontsize=9)
+
+# Errores Absolutos de la Segunda Derivada 
+plt.subplot(3, 2, 6)
+plt.plot(x_vals, np.abs(y_d2_exacta - d2_central_h1), 'orange', label=f'Error Central (h={h1})')
+plt.plot(x_vals, np.abs(y_d2_exacta - d2_central_h2), 'cyan', label=f'Error Central (h={h2})')
+plt.plot(x_vals, np.abs(y_d2_exacta - d2_forward_h1), 'magenta', label=f'Error Forward (h={h1})')
+plt.title("Error Absoluto: Segunda Derivada")
+plt.xlabel("x")
+plt.yscale('log')
+plt.grid(True, which="both", ls="--")
+plt.legend(fontsize=9)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+
+c)  $f(x)=\sqrt{x} sen(x^2)$, $x\in [0,\pi]$
+
+```{python}
+
+#| code-fold: true
+
+try:
+    from scipy.misc import derivative
+except ImportError:
+    try:
+        from scipy import derivative
+    except ImportError:
+        
+        def derivative(func, x, dx=1.0, n=1):
+            if n == 1:
+                return (func(x + dx) - func(x - dx)) / (2 * dx)
+            elif n == 2:
+                return (func(x + dx) - 2 * func(x) + func(x - dx)) / (dx ** 2)
+            else:
+                raise ValueError("Para órdenes superiores use numdifftools.")
+
+
+# DEFINICIÓN DE LA FUNCIÓN Y SUS DERIVADAS EXACTAS 
+
+# f(x) = \sqrt{x} * sin(x^2)
+f = lambda x: np.sqrt(x) * np.sin(x**2)
+
+# Primera derivada exacta:
+f_d1_exacta = lambda x: np.where(x == 0, 0.0, np.sin(x**2) / (2 * np.sqrt(x)) + 2 * (x**1.5) * np.cos(x**2))
+
+# Segunda derivada exacta:
+f_d2_exacta = lambda x: np.where(x == 0, 0.0, -np.sin(x**2) / (4 * (x**1.5)) + 6 * np.sqrt(x) * np.cos(x**2) - 4 * (x**2.5) * np.sin(x**2))
+
+# Configuración del intervalo [0, \pi]
+x_vals = np.linspace(0, np.pi, 200)
+
+h1 = 0.1
+h2 = 0.01
+
+# CÁLCULO DE PRIMERAS DERIVADAS APROXIMADAS Y ERRORES
+
+y_d1_exacta = f_d1_exacta(x_vals)
+
+# Derivada usando SciPy 
+d1_scipy_h1 = derivative(f, x_vals, dx=h1, n=1)
+d1_scipy_h2 = derivative(f, x_vals, dx=h2, n=1)
+
+# Aproximaciones con numdifftools (n=1)
+d1_central_o2_h1 = np.array([nd.Derivative(f, n=1, method='central', step=h1)(x) for x in x_vals])
+d1_central_o2_h2 = np.array([nd.Derivative(f, n=1, method='central', step=h2)(x) for x in x_vals])
+
+d1_forward_o4_h1 = np.array([nd.Derivative(f, n=1, method='forward', step=h1)(x) for x in x_vals])
+d1_forward_o4_h2 = np.array([nd.Derivative(f, n=1, method='forward', step=h2)(x) for x in x_vals])
+
+d1_backward_o2_h1 = np.array([nd.Derivative(f, n=1, method='backward', step=h1)(x) for x in x_vals])
+d1_backward_o2_h2 = np.array([nd.Derivative(f, n=1, method='backward', step=h2)(x) for x in x_vals])
+
+
+# CÁLCULO DE SEGUNDAS DERIVADAS APROXIMADAS Y ERRORES
+
+y_d2_exacta = f_d2_exacta(x_vals)
+
+# Segunda derivada con numdifftools (n=2)
+d2_central_h1 = np.array([nd.Derivative(f, n=2, method='central', step=h1)(x) for x in x_vals])
+d2_central_h2 = np.array([nd.Derivative(f, n=2, method='central', step=h2)(x) for x in x_vals])
+
+d2_forward_h1 = np.array([nd.Derivative(f, n=2, method='forward', step=h1)(x) for x in x_vals])
+d2_backward_h2 = np.array([nd.Derivative(f, n=2, method='backward', step=h2)(x) for x in x_vals])
+
+
+# SUBPLOTS Y GRÁFICAS
+
+plt.figure(figsize=(16, 12))
+plt.suptitle(r"Análisis Numérico para $f(x) = \sqrt{x} \ \sin(x^2)$ en $[0, \pi]$", fontsize=16, fontweight='bold')
+
+# Gráfica de la función original
+plt.subplot(3, 2, 1)
+plt.plot(x_vals, f(x_vals), color='darkgreen', lw=2.5, label='$f(x)$')
+plt.title("Gráfica de la Función Original")
+plt.xlabel("x")
+plt.ylabel("f(x)")
+plt.grid(True)
+plt.legend()
+
+# Comparación de Primeras Derivadas
+plt.subplot(3, 2, 3)
+plt.plot(x_vals, y_d1_exacta, 'k-', lw=3, label='Exacta')
+plt.plot(x_vals, d1_scipy_h1, '--', label=f'SciPy (h={h1})')
+plt.plot(x_vals, d1_central_o2_h2, 'r.', markersize=4, label=f'nd Central (h={h2})')
+plt.plot(x_vals, d1_forward_o4_h1, 'g-.', label=f'nd Forward (h={h1})')
+plt.plot(x_vals, d1_backward_o2_h2, 'b:', label=f'nd Backward (h={h2})')
+plt.title("Comparación: Primera Derivada")
+plt.xlabel("x")
+plt.grid(True)
+plt.legend(fontsize=9)
+
+# Errores Absolutos de la Primera Derivada
+plt.subplot(3, 2, 4)
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_scipy_h1), label=f'Error SciPy (h={h1})')
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_central_o2_h2), label=f'Error Central (h={h2})')
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_forward_o4_h1), label=f'Error Forward (h={h1})')
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_backward_o2_h2), label=f'Error Backward (h={h2})')
+plt.title("Error Absoluto: Primera Derivada")
+plt.xlabel("x")
+plt.yscale('log')
+plt.grid(True, which="both", ls="--")
+plt.legend(fontsize=9)
+
+# Comparación de Segundas Derivadas 
+plt.subplot(3, 2, 5)
+plt.plot(x_vals, y_d2_exacta, 'k-', lw=3, label='Exacta')
+plt.plot(x_vals, d2_central_h1, 'orange', linestyle='--', label=f'nd Central (h={h1})')
+plt.plot(x_vals, d2_central_h2, 'cyan', linestyle=':', label=f'nd Central (h={h2})')
+plt.plot(x_vals, d2_forward_h1, 'magenta', linestyle='-.', label=f'nd Forward (h={h1})')
+plt.title("Comparación: Segunda Derivada")
+plt.xlabel("x")
+plt.grid(True)
+plt.legend(fontsize=9)
+
+# Errores Absolutos de la Segunda Derivada 
+plt.subplot(3, 2, 6)
+plt.plot(x_vals, np.abs(y_d2_exacta - d2_central_h1), 'orange', label=f'Error Central (h={h1})')
+plt.plot(x_vals, np.abs(y_d2_exacta - d2_central_h2), 'cyan', label=f'Error Central (h={h2})')
+plt.plot(x_vals, np.abs(y_d2_exacta - d2_forward_h1), 'magenta', label=f'Error Forward (h={h1})')
+plt.title("Error Absoluto: Segunda Derivada")
+plt.xlabel("x")
+plt.yscale('log')
+plt.grid(True, which="both", ls="--")
+plt.legend(fontsize=9)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+
+d)  $f(x)=(cos\,3x)^2-e^{2x}$, $x\in [0,\pi/2]$
+
+```{python}
+
+# | code-fold: true
+
+try:
+    from scipy.misc import derivative
+except ImportError:
+    try:
+        from scipy import derivative
+    except ImportError:
+        
+        def derivative(func, x, dx=1.0, n=1):
+            if n == 1:
+                return (func(x + dx) - func(x - dx)) / (2 * dx)
+            elif n == 2:
+                return (func(x + dx) - 2 * func(x) + func(x - dx)) / (dx ** 2)
+            else:
+                raise ValueError("Para órdenes superiores use numdifftools.")
+
+
+# DEFINICIÓN DE LA FUNCIÓN Y SUS DERIVADAS EXACTAS 
+
+
+# f(x) = (cos(3x))^2 - e^{2x}
+f = lambda x: np.cos(3*x)**2 - np.exp(2*x)
+
+# Primera derivada exacta: f'(x) = -3*sin(6x) - 2e^{2x}
+f_d1_exacta = lambda x: -3 * np.sin(6*x) - 2 * np.exp(2*x)
+
+# Segunda derivada exacta: f''(x) = -18*cos(6x) - 4e^{2x}
+f_d2_exacta = lambda x: -18 * np.cos(6*x) - 4 * np.exp(2*x)
+
+# Configuración del intervalo [0, \pi/2]
+x_vals = np.linspace(0, np.pi / 2, 200)
+
+h1 = 0.1
+h2 = 0.01
+
+
+# CÁLCULO DE PRIMERAS DERIVADAS APROXIMADAS Y ERRORES
+
+y_d1_exacta = f_d1_exacta(x_vals)
+
+# Derivada usando SciPy
+d1_scipy_h1 = derivative(f, x_vals, dx=h1, n=1)
+d1_scipy_h2 = derivative(f, x_vals, dx=h2, n=1)
+
+# Aproximaciones con numdifftools (n=1)
+d1_central_o2_h1 = np.array([nd.Derivative(f, n=1, method='central', step=h1)(x) for x in x_vals])
+d1_central_o2_h2 = np.array([nd.Derivative(f, n=1, method='central', step=h2)(x) for x in x_vals])
+
+d1_forward_o4_h1 = np.array([nd.Derivative(f, n=1, method='forward', step=h1)(x) for x in x_vals])
+d1_forward_o4_h2 = np.array([nd.Derivative(f, n=1, method='forward', step=h2)(x) for x in x_vals])
+
+d1_backward_o2_h1 = np.array([nd.Derivative(f, n=1, method='backward', step=h1)(x) for x in x_vals])
+d1_backward_o2_h2 = np.array([nd.Derivative(f, n=1, method='backward', step=h2)(x) for x in x_vals])
+
+
+# CÁLCULO DE SEGUNDAS DERIVADAS APROXIMADAS Y ERRORES
+
+y_d2_exacta = f_d2_exacta(x_vals)
+
+# Segunda derivada con numdifftools (n=2)
+d2_central_h1 = np.array([nd.Derivative(f, n=2, method='central', step=h1)(x) for x in x_vals])
+d2_central_h2 = np.array([nd.Derivative(f, n=2, method='central', step=h2)(x) for x in x_vals])
+
+d2_forward_h1 = np.array([nd.Derivative(f, n=2, method='forward', step=h1)(x) for x in x_vals])
+d2_backward_h2 = np.array([nd.Derivative(f, n=2, method='backward', step=h2)(x) for x in x_vals])
+
+
+# SUBPLOTS Y GRÁFICAS
+
+plt.figure(figsize=(16, 12))
+plt.suptitle(r"Análisis Numérico para $f(x) = (\cos \ 3x)^2 - e^{2x}$ en $[0, \pi/2]$", fontsize=16, fontweight='bold')
+
+# Gráfica de la función original
+plt.subplot(3, 2, 1)
+plt.plot(x_vals, f(x_vals), color='darkred', lw=2.5, label='$f(x)$')
+plt.title("Gráfica de la Función Original")
+plt.xlabel("x")
+plt.ylabel("f(x)")
+plt.grid(True)
+plt.legend()
+
+# Comparación de Primeras Derivadas
+plt.subplot(3, 2, 3)
+plt.plot(x_vals, y_d1_exacta, 'k-', lw=3, label='Exacta')
+plt.plot(x_vals, d1_scipy_h1, '--', label=f'SciPy (h={h1})')
+plt.plot(x_vals, d1_central_o2_h2, 'r.', markersize=4, label=f'nd Central (h={h2})')
+plt.plot(x_vals, d1_forward_o4_h1, 'g-.', label=f'nd Forward (h={h1})')
+plt.plot(x_vals, d1_backward_o2_h2, 'b:', label=f'nd Backward (h={h2})')
+plt.title("Comparación: Primera Derivada")
+plt.xlabel("x")
+plt.grid(True)
+plt.legend(fontsize=9)
+
+# Errores Absolutos de la Primera Derivada
+plt.subplot(3, 2, 4)
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_scipy_h1), label=f'Error SciPy (h={h1})')
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_central_o2_h2), label=f'Error Central (h={h2})')
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_forward_o4_h1), label=f'Error Forward (h={h1})')
+plt.plot(x_vals, np.abs(y_d1_exacta - d1_backward_o2_h2), label=f'Error Backward (h={h2})')
+plt.title("Error Absoluto: Primera Derivada")
+plt.xlabel("x")
+plt.yscale('log')
+plt.grid(True, which="both", ls="--")
+plt.legend(fontsize=9)
+
+# Comparación de Segundas Derivadas 
+plt.subplot(3, 2, 5)
+plt.plot(x_vals, y_d2_exacta, 'k-', lw=3, label='Exacta')
+plt.plot(x_vals, d2_central_h1, 'orange', linestyle='--', label=f'nd Central (h={h1})')
+plt.plot(x_vals, d2_central_h2, 'cyan', linestyle=':', label=f'nd Central (h={h2})')
+plt.plot(x_vals, d2_forward_h1, 'magenta', linestyle='-.', label=f'nd Forward (h={h1})')
+plt.title("Comparación: Segunda Derivada")
+plt.xlabel("x")
+plt.grid(True)
+plt.legend(fontsize=9)
+
+# Errores Absolutos de la Segunda Derivada 
+plt.subplot(3, 2, 6)
+plt.plot(x_vals, np.abs(y_d2_exacta - d2_central_h1), 'orange', label=f'Error Central (h={h1})')
+plt.plot(x_vals, np.abs(y_d2_exacta - d2_central_h2), 'cyan', label=f'Error Central (h={h2})')
+plt.plot(x_vals, np.abs(y_d2_exacta - d2_forward_h1), 'magenta', label=f'Error Forward (h={h1})')
+plt.title("Error Absoluto: Segunda Derivada")
+plt.xlabel("x")
+plt.yscale('log')
+plt.grid(True, which="both", ls="--")
+plt.legend(fontsize=9)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+
+# Ejercicio 2
+
+Elige 3 indicadores económicos del INEGI (del archivo `TIE_Inegi_long.xlsx`), realiza la gráfica de la serie temporal y de su derivada. Brinda un análisis de la gráfica y de la evolución del indicador a lo largo del tiempo.
+
+```{python}
+#| code-fold: true
+
+data_inegi = pd.read_excel("TIE_Inegi_long.xlsx")
+data_inegi.info()
+```
+
+### Actividad económica
+
+```{python}
+#| code-fold: true
+df_actividadeconomica = data_inegi[["Fecha", "Actividad_economica"]].dropna()
+df_actividadeconomica.info()
+print(f"Fecha de inicio: {df_actividadeconomica['Fecha'].min()}")
+print(f"Fecha de fin: {df_actividadeconomica['Fecha'].max()}")
+print("------")
+
+print("Estadísticas descriptivas de Actividades terciarias:")
+print(df_actividadeconomica["Actividad_economica"].describe())
+```
+
+
+
+**Serie temporal de Actividad economica**
+
+```{python}
+#| code-fold: true
+
+# Configurar la columna "Fecha" como índice para facilitar la manipulación de datos y la creación de gráficos de series temporales.
+df_actividadeconomica.set_index("Fecha", inplace=True)
+# Definición de la serie temporal
+actividades_ts = df_actividadeconomica["Actividad_economica"]
+print(actividades_ts.info())
+```
+
+
+**Gráfica de la serie temporal de Actividad economica**
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+plt.figure(figsize=(12, 6))
+plt.plot(actividades_ts.index, actividades_ts.values, marker='o', ms=3)
+plt.title('Actividad Economica')
+plt.xlabel('Fecha')
+plt.ylabel('Número de Actividad economica')
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+Filtramos datos a partir de 2016 para observar mejor la tendencia en los últimos años.
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+actividades_ts_2016 = actividades_ts[actividades_ts.index >= "2016-01-01"]
+plt.figure(figsize=(12, 6))
+plt.plot(actividades_ts_2016.index, actividades_ts_2016.values, marker='o', ms=5)
+plt.title('Actividad Economica (Desde 2016)')
+plt.xlabel('Fecha')
+plt.ylabel('Número de Actividad economica')
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+
+**Gráfica interactiva de la serie temporal de Actividad economica**
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+
+fig = px.line(x = actividades_ts_2016.index, y = actividades_ts_2016.values, title='Actividad Economica', labels={'y': 'Número de Actividad economica', 'x': 'Fecha'})
+fig.update_xaxes(rangeslider_visible=True)
+```
+
+
+
+
+### Actividades primarias
+
+```{python}
+#| code-fold: true
+df_actividadesprimarias = data_inegi[["Fecha", "Actividades_primarias"]].dropna()
+df_actividadesprimarias.info()
+print(f"Fecha de inicio: {df_actividadesprimarias['Fecha'].min()}")
+print(f"Fecha de fin: {df_actividadesprimarias['Fecha'].max()}")
+print("------")
+
+print("Estadísticas descriptivas de Actividades primarias:")
+print(df_actividadesprimarias["Actividades_primarias"].describe())
+```
+
+
+
+**Serie temporal de Actividades primarias**
+
+```{python}
+#| code-fold: true
+
+# Configurar la columna "Fecha" como índice para facilitar la manipulación de datos y la creación de gráficos de series temporales.
+df_actividadesprimarias.set_index("Fecha", inplace=True)
+# Definición de la serie temporal
+actividades_ts = df_actividadesprimarias["Actividades_primarias"]
+print(actividades_ts.info())
+```
+
+
+**Gráfica de la serie temporal de Actividades primarias**
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+plt.figure(figsize=(12, 6))
+plt.plot(actividades_ts.index, actividades_ts.values, marker='o', ms=3)
+plt.title('Actividades Primarias')
+plt.xlabel('Fecha')
+plt.ylabel('Número de Actividades primarias')
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+Filtramos datos a partir de 2016 para observar mejor la tendencia en los últimos años.
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+actividades_ts_2016 = actividades_ts[actividades_ts.index >= "2016-01-01"]
+plt.figure(figsize=(12, 6))
+plt.plot(actividades_ts_2016.index, actividades_ts_2016.values, marker='o', ms=5)
+plt.title('Actividades Primarias (Desde 2016)')
+plt.xlabel('Fecha')
+plt.ylabel('Número de Actividades primarias')
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+
+**Gráfica interactiva de la serie temporal de Actividades primarias**
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+
+fig = px.line(x = actividades_ts_2016.index, y = actividades_ts_2016.values, title='Actividades Primarias', labels={'y': 'Número de Actividades primarias', 'x': 'Fecha'})
+fig.update_xaxes(rangeslider_visible=True)
+```
+
+
+
+### Actividad industrial
+
+```{python}
+#| code-fold: true
+df_actividadindustrial = data_inegi[["Fecha", "Actividad_industrial"]].dropna()
+df_actividadindustrial.info()
+print(f"Fecha de inicio: {df_actividadindustrial['Fecha'].min()}")
+print(f"Fecha de fin: {df_actividadindustrial['Fecha'].max()}")
+print("------")
+
+print("Estadísticas descriptivas de Actividad industrial:")
+print(df_actividadindustrial["Actividad_industrial"].describe())
+```
+
+
+
+**Serie temporal de Actividad industrial**
+
+```{python}
+#| code-fold: true
+
+# Configurar la columna "Fecha" como índice para facilitar la manipulación de datos y la creación de gráficos de series temporales.
+df_actividadindustrial.set_index("Fecha", inplace=True)
+# Definición de la serie temporal
+actividades_ts = df_actividadindustrial["Actividad_industrial"]
+print(actividades_ts.info())
+```
+
+
+**Gráfica de la serie temporal de Actividad industrial**
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+plt.figure(figsize=(12, 6))
+plt.plot(actividades_ts.index, actividades_ts.values, marker='o', ms=3)
+plt.title('Actividad Industrial')
+plt.xlabel('Fecha')
+plt.ylabel('Número de Actividades industriales')
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+Filtramos datos a partir de 2016 para observar mejor la tendencia en los últimos años.
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+actividades_ts_2016 = actividades_ts[actividades_ts.index >= "2016-01-01"]
+plt.figure(figsize=(12, 6))
+plt.plot(actividades_ts_2016.index, actividades_ts_2016.values, marker='o', ms=5)
+plt.title('Actividad Industrial (Desde 2016)')
+plt.xlabel('Fecha')
+plt.ylabel('Número de Actividades industriales')
+plt.grid(alpha=0.3)
+plt.show()
+```
+
+
+**Gráfica interactiva de la serie temporal de Actividad industrial**
+
+
+```{python}
+#| code-fold: true
+#| fig-align: "center"
+
+
+fig = px.line(x = actividades_ts_2016.index, y = actividades_ts_2016.values, title='Actividad Industrial', labels={'y': 'Número de Actividades industriales', 'x': 'Fecha'})
+fig.update_xaxes(rangeslider_visible=True)
+```
+
+Cada grafica tiene un comportamiento diferente, la actividad económica muestra una tendencia creciente a lo largo del tiempo, con algunas fluctuaciones. Las actividades primarias se observa una tendencia más estable, aunque con pocas variaciones. La actividad industrial se ve un comportamiento más cambiante, con picos y caídas más pronunciadas. En general, se observa que la actividad económica ha tenido un crecimiento constante, mientras que las actividades primarias e industriales han experimentado variaciones más significativas a lo largo del tiempo.
+
+# Ejercicio 3
+
+Calcular el valor exacto y las aproximaciones numéricas de la siguiente integral:
+
+\begin{equation}
+\int_0^4 x^2e^{-x} dx    
+\end{equation}
+
+Como en el primer ejemplo del archivo `Ejemplos_10_Int_num.qmd`.
+
+```{python}
+
+#| code-fold: true
+
+integral_exacta = 2 - 26 * np.exp(-4)
+print(f"El valor exacto de la integral es: {integral_exacta:.4f}")
+
+```
+
+
+```{python}
+
+def trapezoidal(f, a, b):
+    return (b - a) * (f(a) + f(b)) / 2
+
+def simpson(f, a, b):
+    x_0 = a
+    x_2 = b
+    h = (b - a) / 2
+    x_1 = x_0 + h
+    int_approx = (h / 3) * (f(x_0) + 4 * f(x_1) + f(x_2))
+    return int_approx
+
+def simpson_38(f, a, b):
+    x_0 = a
+    x_3 = b
+    h = (b - a) / 3
+    x_1 = x_0 + h
+    x_2 = x_0 + 2 * h
+    int_approx = (3 * h / 8) * (f(x_0) + 3 * f(x_1) + 3 * f(x_2) + f(x_3))
+    return int_approx
+
+def boole(f, a, b):
+    x_0 = a
+    x_4 = b
+    h = (b - a) / 4
+    x_1 = x_0 + h
+    x_2 = x_0 + 2 * h
+    x_3 = x_0 + 3 * h
+    int_approx = (2 * h / 45) * (7 * f(x_0) + 32 * f(x_1) + 12 * f(x_2) + 32 * f(x_3) + 7 * f(x_4))
+    return int_approx
+
+```
+
+
+```{python}
+
+#| code-fold: true
+
+a = 0
+b = 4
+f = lambda x: (x**2) * np.exp(-x)
+integral_exacta = 2 - 26 * np.exp(-4)
+
+print("Aproximación con el método trapezoidal:")
+print(trapezoidal(f, a, b))
+print("Error absoluto:", abs(integral_exacta - trapezoidal(f, a, b)))
+
+```
+
+
+```{python}
+
+
+#| code-fold: true
+
+print("Aproximación con la función `integrate.trapezoid` de `scipy`:")
+x_values = np.linspace(a, b, 2)
+y_values = f(x_values)
+print(integrate.trapezoid(y_values, x_values))
+print("Error absoluto:", abs(integral_exacta - integrate.trapezoid(y_values, x_values)))
+
+```
+
+
+```{python}
+
+#| code-fold: true
+
+print("Aproximación con el método de Simpson:")
+print(simpson(f, a, b))
+print("Error absoluto:", abs(integral_exacta - simpson(f, a, b)))
+
+```
+
+
+```{python}
+
+#| code-fold: true
+
+print("Aproximación con la función `integrate.simpson` de `scipy`:")
+x_values = np.linspace(a, b, 3)
+y_values = f(x_values)
+print(integrate.simpson(y_values, x_values))
+print("Error absoluto:", abs(integral_exacta - integrate.simpson(y_values, x_values)))
+
+```
+
+
+```{python}
+
+#| code-fold: true
+print("Aproximación con el método de Simpson 3/8:")
+print(simpson_38(f, a, b))
+print("Error absoluto:", abs(integral_exacta - simpson_38(f, a, b)))
+
+```
+
+
+```{python}
+
+#| code-fold: true
+print("Aproximación con el método de Boole:")
+print(boole(f, a, b))
+print("Error absoluto:", abs(integral_exacta - boole(f, a, b)))
+
+```
+
+
+```{python}
+
+#| code-fold: true
+
+n = 12
+h = (b - a) / n
+a_values = np.linspace(a, b, endpoint=False, num=n)  
+b_values = a_values + h
+trapezoidal_compuesto = sum(trapezoidal(f, a_i, b_i) for a_i, b_i in zip(a_values, b_values))
+print("Aproximación con la regla trapezoidal compuesta:")
+print(trapezoidal_compuesto)
+print("Error absoluto:", abs(integral_exacta - trapezoidal_compuesto))
+
+
+```
+
+
+```{python}
+
+#| code-fold: true
+
+print("Aproximación con la función `integrate.trapezoid` de `scipy` para la regla trapezoidal compuesta:")
+x_values = np.linspace(a, b, n+1)
+y_values = f(x_values)
+print(integrate.trapezoid(y_values, x_values))
+print("Error absoluto:", abs(integral_exacta - integrate.trapezoid(y_values, x_values)))
+
+```
+
+
+```{python}
+
+#| code-fold: true
+
+n = 12
+h = (b - a) / n
+a_values = np.linspace(a, b, endpoint=False, num=int(n/2))  
+b_values = a_values + 2*h
+simpson_compuesto = sum(simpson(f, a_i, b_i) for a_i, b_i in zip(a_values, b_values))
+print("Aproximación con el método de Simpson compuesto:")
+print(simpson_compuesto)
+print("Error absoluto:", abs(integral_exacta - simpson_compuesto))
+
+```
+
+
+```{python}
+
+#| code-fold: true
+
+print("Aproximación con la función `integrate.simpson` de `scipy` para el método de Simpson compuesto:")
+x_values = np.linspace(a, b, n+1)
+y_values = f(x_values)
+print(integrate.simpson(y_values, x_values))
+print("Error absoluto:", abs(integral_exacta - integrate.simpson(y_values, x_values)))
+
+```
+
+
+```{python}
+
+#| code-fold: true
+
+n = 12
+h = (b - a) / n
+a_values = np.linspace(a, b, endpoint=False, num=int(n/3))  
+b_values = a_values + 3*h
+simpson_38_compuesto = sum(simpson_38(f, a_i, b_i) for a_i, b_i in zip(a_values, b_values))
+print("Aproximación con el método de Simpson 3/8 compuesto:")
+print(simpson_38_compuesto)
+print("Error absoluto:", abs(integral_exacta - simpson_38_compuesto))
+
+```
+
+
+```{python}
+
+#| code-fold: true
+n = 12              
+h = (b - a) / n
+a_values = np.linspace(a, b, endpoint=False, num=int(n/4))
+b_values = a_values + 4*h
+boole_compuesto = sum(boole(f, a_i, b_i) for a_i, b_i in zip(a_values, b_values))
+print("Aproximación con el método de Boole compuesto:")
+print(boole_compuesto)
+print("Error absoluto:", abs(integral_exacta - boole_compuesto))
+
+```
+
+
+```{python}
+
+#| code-fold: true
+
+print("Aproximación con la función `integrate.quad` de `scipy`:")
+integral_quad, error_quad = integrate.quad(f, a, b)
+print(integral_quad)
+print("Error absoluto:", abs(integral_exacta - integral_quad))
+print("Estimación del error absoluto proporcionada por `integrate.quad`:", error_quad)
+
+```
+
+
+# Ejercicio 4
+
+Aproximar las siguientes integrales con la función `integrate.quad` (de SciPy) y con el método de Montecarlo, en cada caso hacer una gráfica de la función e indicar el área bajo la curva.
+
+a)  
+
+\begin{equation}
+\int_0^1 e^{-x^2}\,dx
+\end{equation}
+
+```{python}
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES 
+
+# f(x) = e^{-x^2} en [0, 1]
+f = lambda x: np.exp(-x**2)
+a = 0
+b = 1
+
+
+# 2. APROXIMACIÓN CON SCIPI (integrate.quad)
+
+res_quad, err_quad = integrate.quad(f, a, b)
+
+
+# 3. APROXIMACIÓN POR EL MÉTODO DE MONTECARLO 
+np.random.seed(42)  
+N = 100000          
+
+# En el intervalo [0, 1], el valor máximo de f(x) es f(0) = 1.
+# Por lo tanto, la altura del rectángulo contenedor (c) es 1.
+c = 1.0
+
+# Generar puntos aleatorios uniformes en el rectángulo [a, b] x [0, c]
+x_rand = np.random.uniform(a, b, N)
+y_rand = np.random.uniform(0, c, N)
+
+# Determinar cuáles puntos caen debajo de la curva f(x)
+puntos_debajo = y_rand < f(x_rand)
+
+# El área aproximada es (Área del Rectángulo) * (Proporción de puntos debajo)
+area_rectangulo = (b - a) * c
+res_montecarlo = area_rectangulo * (np.sum(puntos_debajo) / N)
+
+
+# 4. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print(f"Resultados para la integral de e^(-x^2) de {a} a {b}:")
+print("="*60)
+print(f"Aproximación con scipy.integrate.quad: {res_quad:.6f}")
+print(f"Estimación del error analítico (quad):  {err_quad:.1e}")
+print("-"*60)
+print(f"Aproximación con Método de Montecarlo:   {res_montecarlo:.6f} (N={N})")
+print(f"Error absoluto vs SciPy:                {abs(res_quad - res_montecarlo):.6f}")
+print("="*60)
+
+
+# 5. GRÁFICA DE LA FUNCIÓN Y ÁREA BAJO LA CURVA
+
+x_values = np.linspace(a - 0.2, b + 0.2, 200)
+x_fill = np.linspace(a, b, 100)
+
+plt.figure(figsize=(9, 6))
+
+# Dibujar la curva y el área integrada
+plt.plot(x_values, f(x_values), color='blue', lw=2.5, label=r'$f(x) = e^{-x^2}$')
+plt.fill_between(x_fill, f(x_fill), alpha=0.3, color='orange', label='Área bajo la curva')
+
+# Muestra opcional de una pequeña fracción de puntos de Montecarlo para ilustrar el método
+plt.scatter(x_rand[:500], y_rand[:500], c=puntos_debajo[:500], cmap='bwr', alpha=0.5, s=5, 
+            label='Puntos Montecarlo (Muestra de 500)')
+
+plt.title(r'Integración Numérica para $\int_0^1 e^{-x^2} \, dx$', fontsize=14, fontweight='bold')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.xlim(a - 0.1, b + 0.1)
+plt.ylim(-0.05, c + 0.1)
+plt.axhline(0, color='black', lw=1, ls='--')
+plt.axvline(0, color='black', lw=1, ls='--')
+plt.grid(alpha=0.3)
+plt.legend(loc='lower left')
+plt.show()
+
+```
+
+
+b)  
+
+\begin{equation}
+\int_0^\pi sen(x^2)\,dx
+\end{equation}
+
+```{python}
+
+# %%
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES 
+# f(x) = sin(x^2) en [0, \pi]
+f = lambda x: np.sin(x**2)
+a = 0
+b = np.pi
+
+
+# 2. APROXIMACIÓN CON SCIPI (integrate.quad)
+
+res_quad, err_quad = integrate.quad(f, a, b)
+
+
+# 3. APROXIMACIÓN POR EL MÉTODO DE MONTECARLO 
+np.random.seed(42) 
+N = 100000          
+
+# En el intervalo [0, \pi], el valor máximo de sin(x^2) es 1.
+# Por lo tanto, la altura del rectángulo contenedor (c) es 1.
+c = 1.0
+
+# Generar puntos aleatorios uniformes en el rectángulo [a, b] x [0, c]
+x_rand = np.random.uniform(a, b, N)
+y_rand = np.random.uniform(0, c, N)
+
+# Determinar cuáles puntos caen debajo de la curva f(x)
+puntos_debajo = y_rand < f(x_rand)
+
+# El área aproximada es (Área del Rectángulo) * (Proporción de puntos debajo)
+area_rectangulo = (b - a) * c
+res_montecarlo = area_rectangulo * (np.sum(puntos_debajo) / N)
+
+
+# 4. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print(f"Resultados para la integral de sen(x^2) de {a} a {b:.4f} (\u03c0):")
+print("="*60)
+print(f"Aproximación con scipy.integrate.quad: {res_quad:.6f}")
+print(f"Estimación del error analítico (quad):  {err_quad:.1e}")
+print("-"*60)
+print(f"Aproximación con Método de Montecarlo:   {res_montecarlo:.6f} (N={N})")
+print(f"Error absoluto vs SciPy:                {abs(res_quad - res_montecarlo):.6f}")
+print("="*60)
+
+
+# 5. GRÁFICA DE LA FUNCIÓN Y ÁREA BAJO LA CURVA
+
+x_values = np.linspace(a - 0.2, b + 0.2, 300)
+x_fill = np.linspace(a, b, 200)
+
+plt.figure(figsize=(9, 6))
+
+# Dibujar la curva y el área integrada
+plt.plot(x_values, f(x_values), color='blue', lw=2.5, label=r'$f(x) = \operatorname{sen}(x^2)$')
+plt.fill_between(x_fill, f(x_fill), alpha=0.3, color='orange', label='Área bajo la curva')
+
+# Muestra opcional de una pequeña fracción de puntos de Montecarlo para ilustrar el método
+plt.scatter(x_rand[:500], y_rand[:500], c=puntos_debajo[:500], cmap='bwr', alpha=0.5, s=5, 
+            label='Puntos Montecarlo (Muestra de 500)')
+
+plt.title(r'Integración Numérica para $\int_0^\pi \operatorname{sen}(x^2) \, dx$', fontsize=14, fontweight='bold')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.xlim(a - 0.1, b + 0.1)
+plt.ylim(-0.1, c + 0.1)
+plt.axhline(0, color='black', lw=1, ls='--')
+plt.axvline(0, color='black', lw=1, ls='--')
+plt.grid(alpha=0.3)
+plt.legend(loc='lower left')
+plt.show()
+
+```
+
+
+c)  
+
+\begin{equation}
+\int_\pi^{3\pi} \frac{sen(x)}{x}\,dx
+\end{equation}
+
+```{python}
+
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES 
+# f(x) = sin(x) / x en [\pi, 3\pi]
+f = lambda x: np.sin(x) / x
+a = np.pi
+b = 3 * np.pi
+
+
+# 2. APROXIMACIÓN CON SCIPI (integrate.quad)
+
+res_quad, err_quad = integrate.quad(f, a, b)
+
+
+# 3. APROXIMACIÓN POR EL MÉTODO DE MONTECARLO 
+
+np.random.seed(42)  
+N = 100000          
+
+# En [\pi, 3\pi], f(x) oscila entre aprox -0.13 y 0.22. 
+# Desplazamos la función hacia arriba para que sea completamente positiva en el muestreo.
+desplazamiento = 0.2
+
+f_positiva = lambda x: f(x) + desplazamiento
+
+# Definimos la altura máxima 'c' para el nuevo rectángulo contenedor de f_positiva
+c = 0.5  
+
+# Generar puntos aleatorios uniformes en el rectángulo [a, b] x [0, c]
+x_rand = np.random.uniform(a, b, N)
+y_rand = np.random.uniform(0, c, N)
+
+# Determinar cuáles puntos caen debajo de la curva desplazada f_positiva(x)
+puntos_debajo = y_rand < f_positiva(x_rand)
+
+# Área bajo la curva desplazada
+area_rectangulo = (b - a) * c
+area_positiva_aprox = area_rectangulo * (np.sum(puntos_debajo) / N)
+
+# Restamos el área del rectángulo artificial que agregamos con el desplazamiento: Área = base * altura
+res_montecarlo = area_positiva_aprox - ((b - a) * desplazamiento)
+
+
+# 4. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print(f"Resultados para la integral de sen(x)/x de \u03c0 ({a:.4f}) a 3\u03c0 ({b:.4f}):")
+print("="*60)
+print(f"Aproximación con scipy.integrate.quad: {res_quad:.6f}")
+print(f"Estimación del error analítico (quad):  {err_quad:.1e}")
+print("-"*60)
+print(f"Aproximación con Método de Montecarlo:   {res_montecarlo:.6f} (N={N})")
+print(f"Error absoluto vs SciPy:                {abs(res_quad - res_montecarlo):.6f}")
+print("="*60)
+
+
+# 5. GRÁFICA DE LA FUNCIÓN Y ÁREA BAJO LA CURVA
+
+x_values = np.linspace(a - 0.5, b + 0.5, 300)
+x_fill = np.linspace(a, b, 200)
+
+plt.figure(figsize=(9, 6))
+
+# Dibujar la curva y el área integrada (las áreas negativas quedan bajo el eje x)
+plt.plot(x_values, f(x_values), color='blue', lw=2.5, label=r'$f(x) = \frac{\operatorname{sen}(x)}{x}$')
+plt.fill_between(x_fill, f(x_fill), alpha=0.3, color='orange', label='Área bajo la curva')
+
+# Muestra de los puntos aleatorios de Montecarlo (gráfica de la versión desplazada adaptada al gráfico original)
+# Mostramos solo 500 puntos para mantener la gráfica limpia
+plt.scatter(x_rand[:500], y_rand[:500] - desplazamiento, c=puntos_debajo[:500], cmap='bwr', alpha=0.5, s=5, 
+            label='Puntos Montecarlo (Muestra de 500)')
+
+plt.title(r'Integración Numérica para $\int_\pi^{3\pi} \frac{\operatorname{sen}(x)}{x} \, dx$', fontsize=14, fontweight='bold')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.xlim(a - 0.3, b + 0.3)
+plt.ylim(-0.25, 0.35)
+plt.axhline(0, color='black', lw=1, ls='--')
+plt.axvline(np.pi, color='purple', lw=1, ls=':', label=r'$x=\pi$')
+plt.axvline(3*np.pi, color='purple', lw=1, ls=':', label=r'$x=3\pi$')
+plt.grid(alpha=0.3)
+plt.legend(loc='lower left', fontsize=9)
+plt.show()
+
+
+```
+
+d)  
+
+\begin{equation}
+\int_0^\infty e^{-x^2} cos(x) \,dx
+\end{equation}
+
+```{python}
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES 
+# f(x) = e^{-x^2} * cos(x) en [0, \infty)
+f = lambda x: np.exp(-x**2) * np.cos(x)
+
+# Truncamos el infinito en b = 4 debido al rápido decaimiento exponencial
+a = 0
+b = 4  
+
+
+# 2. APROXIMACIÓN CON SCIPI (integrate.quad admite np.inf directamente)
+
+res_quad, err_quad = integrate.quad(f, 0, np.inf)
+
+
+# 3. APROXIMACIÓN POR EL MÉTODO DE MONTECARLO 
+np.random.seed(42)  
+N = 100000          
+
+# La función toma un valor mínimo de aprox -0.04 cerca de x = 1.8. 
+# Añadimos un pequeño desplazamiento hacia arriba para volverla completamente positiva.
+desplazamiento = 0.1
+f_positiva = lambda x: f(x) + desplazamiento
+
+# Altura máxima 'c' para el rectángulo contenedor de f_positiva (f(0) + desp = 1.1)
+c = 1.1  
+
+# Generar puntos aleatorios uniformes en el rectángulo [a, b] x [0, c]
+x_rand = np.random.uniform(a, b, N)
+y_rand = np.random.uniform(0, c, N)
+
+# Determinar cuáles puntos caen debajo de la curva desplazada f_positiva(x)
+puntos_debajo = y_rand < f_positiva(x_rand)
+
+# Área bajo la curva desplazada en el intervalo truncado
+area_rectangulo = (b - a) * c
+area_positiva_aprox = area_rectangulo * (np.sum(puntos_debajo) / N)
+
+# Restamos el área artificial del desplazamiento: base * altura
+res_montecarlo = area_positiva_aprox - ((b - a) * desplazamiento)
+
+
+# 4. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print(f"Resultados para la integral de e^(-x^2)*cos(x) de 0 a \u221e (Truncado en {b}):")
+print("="*60)
+print(f"Aproximación con scipy.integrate.quad: {res_quad:.6f}")
+print(f"Estimación del error analítico (quad):  {err_quad:.1e}")
+print("-"*60)
+print(f"Aproximación con Método de Montecarlo:   {res_montecarlo:.6f} (N={N})")
+print(f"Error absoluto vs SciPy:                {abs(res_quad - res_montecarlo):.6f}")
+print("="*60)
+
+
+# 5. GRÁFICA DE LA FUNCIÓN Y ÁREA BAJO LA CURVA
+
+x_values = np.linspace(a, b + 0.5, 300)
+x_fill = np.linspace(a, b, 200)
+
+plt.figure(figsize=(9, 6))
+
+# Dibujar la curva y el área integrada (las partes bajo el eje X restan al valor neto)
+plt.plot(x_values, f(x_values), color='blue', lw=2.5, label=r'$f(x) = e^{-x^2} \cos(x)$')
+plt.fill_between(x_fill, f(x_fill), alpha=0.3, color='orange', label='Área bajo la curva')
+
+# Muestra de los puntos de Montecarlo (re-adaptados al sistema de ejes original)
+plt.scatter(x_rand[:500], y_rand[:500] - desplazamiento, c=puntos_debajo[:500], cmap='bwr', alpha=0.5, s=5, 
+            label='Puntos Montecarlo (Muestra de 500)')
+
+plt.title(r'Integración Numérica para $\int_0^\infty e^{-x^2} \cos(x) \, dx$', fontsize=14, fontweight='bold')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.xlim(-0.1, b + 0.2)
+plt.ylim(-0.15, c - desplazamiento + 0.1)
+plt.axhline(0, color='black', lw=1, ls='--')
+plt.axvline(0, color='black', lw=1, ls='--')
+plt.grid(alpha=0.3)
+plt.legend(loc='upper right')
+plt.show()
+
+```
+
+
+e)  
+
+\begin{equation}
+\int_0^1 x^x \,dx
+\end{equation}
+
+```{python}
+
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES 
+# f(x) = x^x en [0, 1]
+# Protegemos x = 0 definiendo su límite que es 1.0 para evitar indeterminaciones.
+f = lambda x: np.where(x == 0, 1.0, x**x)
+a = 0
+b = 1
+
+
+# 2. APROXIMACIÓN CON SCIPI (integrate.quad)
+
+res_quad, err_quad = integrate.quad(f, a, b)
+
+
+# 3. APROXIMACIÓN POR EL MÉTODO DE MONTECARLO 
+np.random.seed(42)  
+N = 100000          
+
+# En el intervalo [0, 1], el valor máximo de x^x es 1.0.
+# Por lo tanto, la altura del rectángulo contenedor (c) es 1.0.
+c = 1.0
+
+# Generar puntos aleatorios uniformes en el rectángulo [a, b] x [0, c]
+x_rand = np.random.uniform(a, b, N)
+y_rand = np.random.uniform(0, c, N)
+
+# Determinar cuáles puntos caen debajo de la curva f(x)
+puntos_debajo = y_rand < f(x_rand)
+
+# El área aproximada es (Área del Rectángulo) * (Proporción de puntos debajo)
+area_rectangulo = (b - a) * c
+res_montecarlo = area_rectangulo * (np.sum(puntos_debajo) / N)
+
+
+# 4. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print(f"Resultados para la integral de x^x de {a} a {b}:")
+print("="*60)
+print(f"Aproximación con scipy.integrate.quad: {res_quad:.6f}")
+print(f"Estimación del error analítico (quad):  {err_quad:.1e}")
+print("-"*60)
+print(f"Aproximación con Método de Montecarlo:   {res_montecarlo:.6f} (N={N})")
+print(f"Error absoluto vs SciPy:                {abs(res_quad - res_montecarlo):.6f}")
+print("="*60)
+
+
+# 5. GRÁFICA DE LA FUNCIÓN Y ÁREA BAJO LA CURVA
+
+x_values = np.linspace(a, b, 200)
+x_fill = np.linspace(a, b, 100)
+
+plt.figure(figsize=(9, 6))
+
+# Dibujar la curva y el área integrada
+plt.plot(x_values, f(x_values), color='blue', lw=2.5, label=r'$f(x) = x^x$')
+plt.fill_between(x_fill, f(x_fill), alpha=0.3, color='orange', label='Área bajo la curva')
+
+# Muestra opcional de una pequeña fracción de puntos de Montecarlo para ilustrar el método
+plt.scatter(x_rand[:500], y_rand[:500], c=puntos_debajo[:500], cmap='bwr', alpha=0.5, s=5, 
+            label='Puntos Montecarlo (Muestra de 500)')
+
+plt.title(r'Integración Numérica para $\int_0^1 x^x \, dx$', fontsize=14, fontweight='bold')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.xlim(a - 0.05, b + 0.05)
+plt.ylim(0, c + 0.1)
+plt.axhline(0, color='black', lw=1, ls='--')
+plt.axvline(0, color='black', lw=1, ls='--')
+plt.grid(alpha=0.3)
+plt.legend(loc='lower left')
+plt.show()
+
+```
+
+
+f)  
+
+\begin{equation}
+\int_1^5 e^{-x^2} x^3 dx
+\end{equation}
+
+```{python}
+
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES (Inciso f)
+
+# f(x) = e^{-x^2} * x^3 en [1, 5]
+f = lambda x: np.exp(-x**2) * (x**3)
+a = 1
+b = 5
+
+
+# 2. APROXIMACIÓN CON SCIPI (integrate.quad)
+
+res_quad, err_quad = integrate.quad(f, a, b)
+
+# 3. APROXIMACIÓN POR EL MÉTODO DE MONTECARLO (Aceptación y Rechazo)
+
+np.random.seed(42)  # Semilla para reproducibilidad
+N = 100000          # Número de puntos aleatorios
+
+# El valor máximo de la función en [1, 5] es aproximadamente 0.421
+# Definimos la altura del rectángulo contenedor (c) en 0.5 para cubrirlo con seguridad.
+c = 0.5
+
+# Generar puntos aleatorios uniformes en el rectángulo [a, b] x [0, c]
+x_rand = np.random.uniform(a, b, N)
+y_rand = np.random.uniform(0, c, N)
+
+# Determinar cuáles puntos caen debajo de la curva f(x)
+puntos_debajo = y_rand < f(x_rand)
+
+# El área aproximada es (Área del Rectángulo) * (Proporción de puntos debajo)
+area_rectangulo = (b - a) * c
+res_montecarlo = area_rectangulo * (np.sum(puntos_debajo) / N)
+
+
+# 4. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print(f"Resultados para la integral de e^(-x^2)*x^3 de {a} a {b}:")
+print("="*60)
+print(f"Aproximación con scipy.integrate.quad: {res_quad:.6f}")
+print(f"Estimación del error analítico (quad):  {err_quad:.1e}")
+print("-"*60)
+print(f"Aproximación con Método de Montecarlo:   {res_montecarlo:.6f} (N={N})")
+print(f"Error absoluto vs SciPy:                {abs(res_quad - res_montecarlo):.6f}")
+print("="*60)
+
+
+# 5. GRÁFICA DE LA FUNCIÓN Y ÁREA BAJO LA CURVA
+
+x_values = np.linspace(a - 0.2, b + 0.2, 200)
+x_fill = np.linspace(a, b, 100)
+
+plt.figure(figsize=(9, 6))
+
+# Dibujar la curva y el área integrada
+plt.plot(x_values, f(x_values), color='blue', lw=2.5, label=r'$f(x) = e^{-x^2} x^3$')
+plt.fill_between(x_fill, f(x_fill), alpha=0.3, color='orange', label='Área bajo la curva')
+
+# Muestra opcional de una pequeña fracción de puntos de Montecarlo para ilustrar el método
+plt.scatter(x_rand[:500], y_rand[:500], c=puntos_debajo[:500], cmap='bwr', alpha=0.5, s=5, 
+            label='Puntos Montecarlo (Muestra de 500)')
+
+plt.title(r'Integración Numérica para $\int_1^5 e^{-x^2} x^3 \, dx$', fontsize=14, fontweight='bold')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.xlim(a - 0.1, b + 0.1)
+plt.ylim(-0.02, c + 0.05)
+plt.axhline(0, color='black', lw=1, ls='--')
+plt.axvline(a, color='purple', lw=1, ls=':', label=r'$x=1$')
+plt.axvline(b, color='purple', lw=1, ls=':', label=r'$x=5$')
+plt.grid(alpha=0.3)
+plt.legend(loc='upper right')
+plt.show()
+
+```
+
+
+g)  
+
+\begin{equation}
+\int_0^\infty \frac{x}{e^x-1} dx
+\end{equation}
+
+```{python}
+
+# %%
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES 
+# f(x) = x / (e^x - 1) en [0, \infty)
+# Protegemos x = 0 definiendo su límite analítico (1.0) para evitar división por cero.
+f = lambda x: np.where(x == 0, 1.0, x / (np.exp(x) - 1))
+
+# Truncamos el infinito en b = 16 debido al rápido decaimiento hacia cero
+a = 0
+b = 16  
+
+
+# 2. APROXIMACIÓN CON SCIPI (integrate.quad admite np.inf directamente)
+
+# Nota : El valor exacto de esta integral en el infinito es \pi^2 / 6 \approx 1.644934
+res_quad, err_quad = integrate.quad(f, 0, np.inf)
+
+
+# 3. APROXIMACIÓN POR EL MÉTODO DE MONTECARLO (Aceptación y Rechazo)
+
+np.random.seed(42)  
+N = 100000          
+
+# El valor máximo de la función es 1.0 cuando x tiende a 0.
+# Por lo tanto, la altura del rectángulo contenedor (c) es 1.0.
+c = 1.0
+
+# Generar puntos aleatorios uniformes en el rectángulo [a, b] x [0, c]
+x_rand = np.random.uniform(a, b, N)
+y_rand = np.random.uniform(0, c, N)
+
+# Determinar cuáles puntos caen debajo de la curva f(x)
+puntos_debajo = y_rand < f(x_rand)
+
+# El área aproximada es (Área del Rectángulo) * (Proporción de puntos debajo)
+area_rectangulo = (b - a) * c
+res_montecarlo = area_rectangulo * (np.sum(puntos_debajo) / N)
+
+
+# 4. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print(f"Resultados para la integral de x/(e^x - 1) de 0 a \u221e (Truncado en {b}):")
+print("="*60)
+print(f"Aproximación con scipy.integrate.quad: {res_quad:.6f}")
+print(f"Estimación del error analítico (quad):  {err_quad:.1e}")
+print("-"*60)
+print(f"Aproximación con Método de Montecarlo:   {res_montecarlo:.6f} (N={N})")
+print(f"Error absoluto vs SciPy:                {abs(res_quad - res_montecarlo):.6f}")
+print("="*60)
+
+
+# 5. GRÁFICA DE LA FUNCIÓN Y ÁREA BAJO LA CURVA
+
+x_values = np.linspace(a, b + 1, 300)
+x_fill = np.linspace(a, b, 200)
+
+plt.figure(figsize=(9, 6))
+
+# Dibujar la curva y el área integrada
+plt.plot(x_values, f(x_values), color='blue', lw=2.5, label=r'$f(x) = \frac{x}{e^x - 1}$')
+plt.fill_between(x_fill, f(x_fill), alpha=0.3, color='orange', label='Área bajo la curva')
+
+# Muestra opcional de una pequeña fracción de puntos de Montecarlo para ilustrar el método
+plt.scatter(x_rand[:500], y_rand[:500], c=puntos_debajo[:500], cmap='bwr', alpha=0.5, s=5, 
+            label='Puntos Montecarlo (Muestra de 500)')
+
+plt.title(r'Integración Numérica para $\int_0^\infty \frac{x}{e^x - 1} \, dx$', fontsize=14, fontweight='bold')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.xlim(-0.5, b + 0.5)
+plt.ylim(-0.05, c + 0.1)
+plt.axhline(0, color='black', lw=1, ls='--')
+plt.axvline(0, color='black', lw=1, ls='--')
+plt.grid(alpha=0.3)
+plt.legend(loc='upper right')
+plt.show()
+
+```
+
+
+h)  
+
+\begin{equation}
+\int_0^1 \frac{1}{\sqrt{x^4+1}} dx
+\end{equation}
+
+```{python}
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES 
+# f(x) = 1 / sqrt(x^4 + 1) en [0, 1]
+f = lambda x: 1.0 / np.sqrt(x**4 + 1.0)
+a = 0
+b = 1
+
+
+# 2. APROXIMACIÓN CON SCIPI (integrate.quad)
+
+res_quad, err_quad = integrate.quad(f, a, b)
+
+
+# 3. APROXIMACIÓN POR EL MÉTODO DE MONTECARLO (Aceptación y Rechazo)
+
+np.random.seed(42)  
+N = 100000          
+
+# En el intervalo [0, 1], el valor máximo de la función es exactamente 1.0 (en x=0)
+# Por lo tanto, la altura del rectángulo contenedor (c) es 1.0.
+c = 1.0
+
+# Generar puntos aleatorios uniformes en el rectángulo [a, b] x [0, c]
+x_rand = np.random.uniform(a, b, N)
+y_rand = np.random.uniform(0, c, N)
+
+# Determinar cuáles puntos caen debajo de la curva f(x)
+puntos_debajo = y_rand < f(x_rand)
+
+# El área aproximada es (Área del Rectángulo) * (Proporción de puntos debajo)
+area_rectangulo = (b - a) * c
+res_montecarlo = area_rectangulo * (np.sum(puntos_debajo) / N)
+
+
+# 4. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print(f"Resultados para la integral de 1/sqrt(x^4 + 1) de {a} a {b}:")
+print("="*60)
+print(f"Aproximación con scipy.integrate.quad: {res_quad:.6f}")
+print(f"Estimación del error analítico (quad):  {err_quad:.1e}")
+print("-"*60)
+print(f"Aproximación con Método de Montecarlo:   {res_montecarlo:.6f} (N={N})")
+print(f"Error absoluto vs SciPy:                {abs(res_quad - res_montecarlo):.6f}")
+print("="*60)
+
+
+# 5. GRÁFICA DE LA FUNCIÓN Y ÁREA BAJO LA CURVA
+
+x_values = np.linspace(a - 0.1, b + 0.1, 200)
+x_fill = np.linspace(a, b, 100)
+
+plt.figure(figsize=(9, 6))
+
+# Dibujar la curva y el área integrada
+plt.plot(x_values, f(x_values), color='blue', lw=2.5, label=r'$f(x) = \frac{1}{\sqrt{x^4 + 1}}$')
+plt.fill_between(x_fill, f(x_fill), alpha=0.3, color='orange', label='Área bajo la curva')
+
+# Muestra opcional de una pequeña fracción de puntos de Montecarlo para ilustrar el método
+plt.scatter(x_rand[:500], y_rand[:500], c=puntos_debajo[:500], cmap='bwr', alpha=0.5, s=5, 
+            label='Puntos Montecarlo (Muestra de 500)')
+
+plt.title(r'Integración Numérica para $\int_0^1 \frac{1}{\sqrt{x^4 + 1}} \, dx$', fontsize=14, fontweight='bold')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.xlim(a - 0.05, b + 0.05)
+plt.ylim(0, c + 0.1)
+plt.axhline(0, color='black', lw=1, ls='--')
+plt.axvline(0, color='black', lw=1, ls='--')
+plt.grid(alpha=0.3)
+plt.legend(loc='lower left')
+plt.show()
+
+```
+
+# Ejercicio 5
+
+Aproximar las siguientes integrales dobles y triples, llevar a cabo la gráfica cuando se indique y comparar con el valor *exacto* de la integral.
+
+a)  Realizar gráfica
+
+\begin{equation}
+\int_{-1}^{1}\int_1^2 (3y^2-x^2+5) dx dy
+\end{equation}
+
+```{python}
+
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES
+
+# f(x, y) = 3*y^2 - x^2 + 5
+# Límites de integración: x va de 1 a 2, y va de -1 a 1
+f = lambda y, x: 3*(y**2) - x**2 + 5  # Nota: dblquad requiere f(y, x) por defecto
+
+x_min, x_max = 1, 2
+y_min, y_max = -1, 1
+
+# Valor exacto analítico calculado (34/3)
+integral_exacta = 34.0 / 3.0
+
+
+# 2. APROXIMACIÓN NUMÉRICA CON SCIPI (integrate.dblquad)
+
+# Los límites de la integral interna (y) se pasan como funciones en dblquad
+res_dblquad, err_dblquad = integrate.dblquad(f, x_min, x_max, lambda x: y_min, lambda x: y_max)
+
+
+# 3. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print("Resultados para la Integral Doble (Inciso a):")
+print("="*60)
+print(f"Valor exacto analítico:                {integral_exacta:.6f}")
+print(f"Aproximación con scipy.integrate.dblquad: {res_dblquad:.6f}")
+print(f"Estimación del error analítico (scipy):  {err_dblquad:.1e}")
+print(f"Error absoluto real:                    {abs(integral_exacta - res_dblquad):.1e}")
+print("="*60)
+
+
+# 4. GRÁFICA 3D DE LA FUNCIÓN SOBRE LA REGIÓN DE INTEGRACIÓN
+
+# Generar malla de puntos para la superficie
+x_vec = np.linspace(x_min, x_max, 50)
+y_vec = np.linspace(y_min, y_max, 50)
+X, Y = np.meshgrid(x_vec, y_vec)
+Z = 3*(Y**2) - X**2 + 5 # Evaluamos f(x,y) para la gráfica
+
+fig = plt.figure(figsize=(10, 7))
+ax = fig.add_subplot(111, projection='3d')
+
+# Graficar la superficie
+superficie = ax.plot_surface(X, Y, Z, cmap='viridis', alpha=0.8, edgecolor='none')
+
+# Añadir una barra de color como referencia de altura
+fig.colorbar(superficie, ax=ax, shrink=0.5, aspect=10, label='f(x, y)')
+
+# Configuración de etiquetas y títulos
+ax.set_title(r'Superficie de $f(x,y) = 3y^2 - x^2 + 5$ en la Región de Integración', fontsize=12, fontweight='bold')
+ax.set_xlabel('Eje X (Límites: 1 a 2)')
+ax.set_ylabel('Eje Y (Límites: -1 a 1)')
+ax.set_zlabel('f(x, y)')
+
+# Ajustar los límites de los ejes para enmarcar la región exacta
+ax.set_xlim(x_min - 0.2, x_max + 0.2)
+ax.set_ylim(y_min - 0.2, y_max + 0.2)
+
+# Ajustar el ángulo de visión inicial para apreciar el volumen bajo la superficie
+ax.view_init(elev=25, azim=-135)
+
+plt.show()
+
+```
+
+
+b)  
+
+\begin{equation}
+\int_{0}^{6}\int_1^5 \sqrt{x+4y} dx dy
+\end{equation}
+
+```{python}
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES
+
+# f(x, y) = sqrt(x + 4y)
+# Límites de integración: x va de 1 a 5, y va de 0 a 6
+f = lambda y, x: np.sqrt(x + 4*y)  # dblquad requiere f(y, x) por defecto
+
+x_min, x_max = 1, 5
+y_min, y_max = 0, 6
+
+def resolver_exacta():
+    # Integración exacta analítica paso a paso:
+    # 1. Integral interna respecto a x: [2/3 * (x + 4y)^(3/2)] de 1 a 5
+    #    = 2/3 * ((5 + 4y)^(3/2) - (1 + 4y)^(3/2))
+    # 2. Integral externa respecto a y:
+    #    = 2/3 * [2/5 * 1/4 * (5 + 4y)^(5/2) - 2/5 * 1/4 * (1 + 4y)^(5/2)] de 0 a 6
+    #    = 1/15 * [ (5 + 4(6))^(5/2) - (1 + 4(6))^(5/2) - (5 + 0)^(5/2) + (1 + 0)^(5/2) ]
+    #    = 1/15 * [ 29^(5/2) - 25^(5/2) - 5^(5/2) + 1^(5/2) ]
+    term1 = 29**(5/2)
+    term2 = 25**(5/2)  # 3125
+    term3 = 5**(5/2)   # 25*sqrt(5)
+    term4 = 1**(5/2)   # 1
+    return (term1 - term2 - term3 + term4) / 15.0
+
+integral_exacta = resolver_exacta()
+
+
+# 2. APROXIMACIÓN NUMÉRICA CON SCIPI (integrate.dblquad)
+
+res_dblquad, err_dblquad = integrate.dblquad(f, x_min, x_max, lambda x: y_min, lambda x: y_max)
+
+
+# 3. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print("Resultados para la Integral Doble (Inciso b):")
+print("="*60)
+print(f"Valor exacto analítico:                {integral_exacta:.6f}")
+print(f"Aproximación con scipy.integrate.dblquad: {res_dblquad:.6f}")
+print(f"Estimación del error analítico (scipy):  {err_dblquad:.1e}")
+print(f"Error absoluto real:                    {abs(integral_exacta - res_dblquad):.1e}")
+print("="*60)
+
+
+# 4. GRÁFICA 3D DE LA FUNCIÓN SOBRE LA REGIÓN DE INTEGRACIÓN
+
+x_vec = np.linspace(x_min, x_max, 50)
+y_vec = np.linspace(y_min, y_max, 50)
+X, Y = np.meshgrid(x_vec, y_vec)
+Z = np.sqrt(X + 4*Y)
+
+fig = plt.figure(figsize=(10, 7))
+ax = fig.add_subplot(111, projection='3d')
+
+superficie = ax.plot_surface(X, Y, Z, cmap='plasma', alpha=0.8, edgecolor='none')
+fig.colorbar(superficie, ax=ax, shrink=0.5, aspect=10, label='f(x, y)')
+
+ax.set_title(r'Superficie de $f(x,y) = \sqrt{x+4y}$ en la Región de Integración', fontsize=12, fontweight='bold')
+ax.set_xlabel('Eje X (Límites: 1 a 5)')
+ax.set_ylabel('Eje Y (Límites: 0 a 6)')
+ax.set_zlabel('f(x, y)')
+
+ax.set_xlim(x_min - 0.5, x_max + 0.5)
+ax.set_ylim(y_min - 0.5, y_max + 0.5)
+ax.view_init(elev=20, azim=-125)
+
+plt.show()
+
+```
+
+
+c)  
+
+\begin{equation}
+\int_{1}^{e}\int_0^{log(x)} x^3 dx dy
+\end{equation}
+
+```{python}
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES
+
+# f(x, y) = x^3
+# Límites de integración: x va de 1 a e, y va de 0 a ln(x)
+f = lambda y, x: x**3  # dblquad requiere f(y, x) por defecto
+
+x_min = 1.0
+x_max = np.e
+
+# Límites de la integral interna dependientes de x
+y_lim_inf = lambda x: 0.0
+y_lim_sup = lambda x: np.log(x)
+
+# Valor exacto analítico calculado ((3*e^4 + 1) / 16)
+integral_exacta = (3.0 * np.exp(4) + 1.0) / 16.0
+
+
+# 2. APROXIMACIÓN NUMÉRICA CON SCIPI (integrate.dblquad)
+
+res_dblquad, err_dblquad = integrate.dblquad(f, x_min, x_max, y_lim_inf, y_lim_sup)
+
+# 3. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print("Resultados para la Integral Doble (Inciso c):")
+print("="*60)
+print(f"Valor exacto analítico:                {integral_exacta:.6f}")
+print(f"Aproximación con scipy.integrate.dblquad: {res_dblquad:.6f}")
+print(f"Estimación del error analítico (scipy):  {err_dblquad:.1e}")
+print(f"Error absoluto real:                    {abs(integral_exacta - res_dblquad):.1e}")
+print("="*60)
+
+
+# 4. GRÁFICA 3D DE LA FUNCIÓN SOBRE LA REGIÓN DE INTEGRACIÓN
+
+# Generamos la malla adaptando los límites variables en Y para no graficar fuera de la región
+x_vec = np.linspace(x_min, x_max, 50)
+y_vec = np.linspace(0, np.log(x_max), 50)
+X, Y = np.meshgrid(x_vec, y_vec)
+
+Z = X**3
+
+# Aplicamos una máscara para ocultar los puntos donde Y > ln(X) 
+# y visualizar únicamente la superficie sobre la región real de integración.
+Z_masked = np.where(Y <= np.log(X), Z, np.nan)
+
+fig = plt.figure(figsize=(10, 7))
+ax = fig.add_subplot(111, projection='3d')
+
+superficie = ax.plot_surface(X, Y, Z_masked, cmap='viridis', alpha=0.8, edgecolor='none')
+fig.colorbar(superficie, ax=ax, shrink=0.5, aspect=10, label='f(x, y)')
+
+ax.set_title(r'Superficie de $f(x,y) = x^3$ acotada por $y = \ln(x)$', fontsize=12, fontweight='bold')
+ax.set_xlabel('Eje X (Límites: 1 a e)')
+ax.set_ylabel('Eje Y (Límites: 0 a $\ln(x)$)')
+ax.set_zlabel('f(x, y)')
+
+ax.set_xlim(x_min - 0.2, x_max + 0.2)
+ax.set_ylim(-0.2, np.log(x_max) + 0.2)
+ax.view_init(elev=25, azim=-140)
+
+plt.show()
+
+```
+
+
+d)  
+
+\begin{equation}
+\int\int_D 30ye^x dx dy
+\end{equation}
+
+Donde $D\subset \mathbb{R}^2$ es la región en la siguiente gráfica.
+
+```{python}
+#| code-fold: true
+#| fig-align: 'center'
+
+
+
+
+x_val = np.array([0,4])
+y_val1 = np.array([0, 1])
+y_val2 = np.array([0, 4])
+
+plt.figure(figsize=(8,6))
+plt.plot(x_val, y_val1)
+plt.plot(x_val, y_val2)
+plt.fill_between(x_val, y1=y_val1, y2=y_val2, color="firebrick", alpha=0.5)
+plt.grid()
+plt.show()
+
+  
+```
+
+
+```{python}
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES
+
+# f(x, y) = 30 * y * e^x
+# Límites de integración: x va de 0 a 4
+f = lambda y, x: 30 * y * np.exp(x)  # dblquad requiere f(y, x) por defecto
+
+x_min, x_max = 0.0, 4.0
+
+# Límites variables de y en función de x según las rectas de la región D
+y_lim_inf = lambda x: 0.25 * x  # Recta inferior: y = x/4
+y_lim_sup = lambda x: x         # Recta superior: y = x
+
+# Valor exacto analítico calculado (225/8 * (5*e^4 - 1))
+integral_exacta = (225.0 / 8.0) * (5.0 * np.exp(4) - 1.0)
+
+
+# 2. APROXIMACIÓN NUMÉRICA CON SCIPI (integrate.dblquad)
+
+res_dblquad, err_dblquad = integrate.dblquad(f, x_min, x_max, y_lim_inf, y_lim_sup)
+
+
+# 3. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print("Resultados para la Integral Doble (Inciso d):")
+print("="*60)
+print(f"Valor exacto analítico:                {integral_exacta:.6f}")
+print(f"Aproximación con scipy.integrate.dblquad: {res_dblquad:.6f}")
+print(f"Estimación del error analítico (scipy):  {err_dblquad:.1e}")
+print(f"Error absoluto real:                    {abs(integral_exacta - res_dblquad):.1e}")
+print("="*60)
+
+
+# 4. GRÁFICA 3D DE LA FUNCIÓN SOBRE LA REGIÓN TRIANGULAR D
+
+# Generamos la malla cubriendo el rectángulo contenedor [0,4] x [0,4]
+x_vec = np.linspace(x_min, x_max, 100)
+y_vec = np.linspace(0.0, x_max, 100)
+X, Y = np.meshgrid(x_vec, y_vec)
+
+Z = 30 * Y * np.exp(X)
+
+# Aplicamos una máscara para ocultar los puntos que queden fuera de la región D
+# Condición: y debe ser mayor o igual a x/4 Y menor o igual a x
+Z_masked = np.where((Y >= 0.25*X) & (Y <= X), Z, np.nan)
+
+fig = plt.figure(figsize=(10, 7))
+ax = fig.add_subplot(111, projection='3d')
+
+# Usamos escala logarítmica implícita o mapa de color perceptivo porque la exponencial crece mucho
+superficie = ax.plot_surface(X, Y, Z_masked, cmap='autumn', alpha=0.8, edgecolor='none')
+fig.colorbar(superficie, ax=ax, shrink=0.5, aspect=10, label='f(x, y)')
+
+ax.set_title(r'Superficie de $f(x,y) = 30ye^x$ sobre la Región Triangular $D$', fontsize=12, fontweight='bold')
+ax.set_xlabel('Eje X')
+ax.set_ylabel('Eje Y')
+ax.set_zlabel('f(x, y)')
+
+ax.set_xlim(x_min - 0.2, x_max + 0.2)
+ax.set_ylim(-0.2, x_max + 0.2)
+ax.view_init(elev=20, azim=-130)
+
+plt.show()
+
+```
+
+e)  
+
+\begin{equation}
+\int\int \int_B z e^{x+y} dx\, dy\, dz, \, B=[0,1] \times [0,1] \times [0,1]
+\end{equation}
+
+```{python}
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import scipy.integrate as integrate
+
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES
+
+# f(x, y, z) = z * e^(x + y)
+# Región de integración: x in [0,1], y in [0,1], z in [0,1]
+# Nota: tplquad requiere obligatoriamente el orden de argumentos f(z, y, x)
+f = lambda z, y, x: z * np.exp(x + y)
+
+x_min, x_max = 0.0, 1.0
+
+# Límites constantes para y & z pasados como funciones constantes en tplquad
+y_lim_inf = lambda x: 0.0
+y_lim_sup = lambda x: 1.0
+
+z_lim_inf = lambda x, y: 0.0
+z_lim_sup = lambda x, y: 1.0
+
+# Valor exacto analítico calculado ((e - 1)^2 / 2)
+integral_exacta = ((np.e - 1.0)**2) / 2.0
+
+
+# 2. APROXIMACIÓN NUMÉRICA CON SCIPI (integrate.tplquad)
+
+res_tplquad, err_tplquad = integrate.tplquad(
+    f, 
+    x_min, x_max, 
+    y_lim_inf, y_lim_sup, 
+    z_lim_inf, z_lim_sup
+)
+
+
+# 3. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print("Resultados para la Integral Triple (Inciso e):")
+print("="*60)
+print(f"Valor exacto analítico:                {integral_exacta:.6f}")
+print(f"Aproximación con scipy.integrate.tplquad: {res_tplquad:.6f}")
+print(f"Estimación del error analítico (scipy):  {err_tplquad:.1e}")
+print(f"Error absoluto real:                    {abs(integral_exacta - res_tplquad):.1e}")
+print("="*60)
+
+
+# 4. GRÁFICA DEL VOLUMEN DE INTEGRACIÓN CON MAPA DE DENSIDAD DE COLOR
+
+# Generamos una grilla densa de puntos dentro del cubo unitario
+num_puntos = 25
+x_vals = np.linspace(0, 1, num_puntos)
+y_vals = np.linspace(0, 1, num_puntos)
+z_vals = np.linspace(0, 1, num_puntos)
+
+X, Y, Z = np.meshgrid(x_vals, y_vals, z_vals)
+
+# Evaluamos los puntos en la función original f(x, y, z) = z * e^(x+y)
+# (Ajustamos el orden de las variables para la evaluación matemática estándar)
+Valores_F = Z * np.exp(X + Y)
+
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+# Graficamos los puntos usando un scatter en 3D donde el color 'c' depende del valor de la función
+scat = ax.scatter(X, Y, Z, c=Valores_F.flatten(), cmap='plasma', alpha=0.4, s=10)
+
+# Añadimos la barra de colores para interpretar qué zonas tienen mayor "peso" en la integral
+cbar = fig.colorbar(scat, ax=ax, shrink=0.6, aspect=15, pad=0.1)
+cbar.set_label('Valor de $f(x,y,z) = z e^{x+y}$', fontsize=10)
+
+# Configuración estética de etiquetas y límites
+ax.set_title('Región de Integración $B$ (Cubo Unitario) y Densidad del Integrando', fontsize=12, fontweight='bold')
+ax.set_xlabel('Eje X')
+ax.set_ylabel('Eje Y')
+ax.set_zlabel('Eje Z')
+
+ax.set_xlim(-0.1, 1.1)
+ax.set_ylim(-0.1, 1.1)
+ax.set_zlim(-0.1, 1.1)
+
+# Orientamos la cámara para apreciar la perspectiva cúbica
+ax.view_init(elev=25, azim=45)
+
+plt.show()
+
+
+```
+
+f)  
+
+\begin{equation}
+\int_0^1 \int_0^x \int_0^y (y+xz) dz\, dy\, dx
+\end{equation}
+
+```{python}
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
+
+# 1. CONFIGURACIÓN DE LA FUNCIÓN Y LÍMITES
+
+# f(x, y, z) = y + x*z
+# Límites de integración: x in [0,1], y in [0,x], z in [0,y]
+# Nota: tplquad requiere el orden estricto de argumentos f(z, y, x)
+f = lambda z, y, x: y + x * z
+
+x_min, x_max = 0.0, 1.0
+
+# Límites variables para y (dependen de x)
+y_lim_inf = lambda x: 0.0
+y_lim_sup = lambda x: x
+
+# Límites variables para z (dependen de x e y)
+z_lim_inf = lambda x, y: 0.0
+z_lim_sup = lambda x, y: y
+
+# Valor exacto analítico calculado (7 / 60)
+integral_exacta = 7.0 / 60.0
+
+
+# 2. APROXIMACIÓN NUMÉRICA CON SCIPI (integrate.tplquad)
+
+res_tplquad, err_tplquad = integrate.tplquad(
+    f, 
+    x_min, x_max, 
+    y_lim_inf, y_lim_sup, 
+    z_lim_inf, z_lim_sup
+)
+
+
+# 3. IMPRESIÓN DE RESULTADOS
+
+print("="*60)
+print("Resultados para la Integral Triple (Inciso f):")
+print("="*60)
+print(f"Valor exacto analítico:                {integral_exacta:.6f}")
+print(f"Aproximación con scipy.integrate.tplquad: {res_tplquad:.6f}")
+print(f"Estimación del error analítico (scipy):  {err_tplquad:.1e}")
+print(f"Error absoluto real:                    {abs(integral_exacta - res_tplquad):.1e}")
+print("="*60)
+
+
+# 4. GRÁFICA DE LA REGIÓN DE INTEGRACIÓN (TETRAEDRO) Y DENSIDAD DEL INTEGRANDO
+
+# Generamos una malla densa de puntos en el cubo contenedor [0,1] x [0,1] x [0,1]
+num_puntos = 35
+x_vals = np.linspace(0, 1, num_puntos)
+y_vals = np.linspace(0, 1, num_puntos)
+z_vals = np.linspace(0, 1, num_puntos)
+
+X, Y, Z = np.meshgrid(x_vals, y_vals, z_vals)
+
+# Evaluamos la función matemática estándar
+Valores_F = Y + X * Z
+
+# Creamos una máscara lógica basada en las restricciones de los límites variables:
+# x va de 0 a 1 (implícito en la malla), y <= x, z <= y
+mascara_region = (Y <= X) & (Z <= Y)
+
+# Filtramos los vectores para quedarnos únicamente con los puntos dentro del tetraedro
+X_filtrado = X[mascara_region]
+Y_filtrado = Y[mascara_region]
+Z_filtrado = Z[mascara_region]
+F_filtrado = Valores_F[mascara_region]
+
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+# Graficamos la nube de puntos que describe la pirámide inclinada
+scat = ax.scatter(X_filtrado, Y_filtrado, Z_filtrado, c=F_filtrado, cmap='viridis', alpha=0.5, s=8)
+
+# Añadimos la barra de colores para interpretar los valores de la función
+cbar = fig.colorbar(scat, ax=ax, shrink=0.6, aspect=15, pad=0.1)
+cbar.set_label('Valor de $f(x,y,z) = y + xz$', fontsize=10)
+
+# Configuración estética
+ax.set_title('Región de Integración Tetraédrica ($0 \\leq x \\leq 1$, $0 \\leq y \\leq x$, $0 \\leq z \\leq y$)', fontsize=11, fontweight='bold')
+ax.set_xlabel('Eje X')
+ax.set_ylabel('Eje Y')
+ax.set_zlabel('Eje Z')
+
+ax.set_xlim(-0.05, 1.05)
+ax.set_ylim(-0.05, 1.05)
+ax.set_zlim(-0.05, 1.05)
+
+# Orientamos la perspectiva para poder observar la forma piramidal de la región
+ax.view_init(elev=20, azim=-60)
+
+plt.show()
+
+```
+
+# Ejercicio 6
+
+De `scipy.stats` elige 5 distribuciones continuas diferentes de probabilidad continua, realiza la gráfica y encuentra la probabilidad que la variable aleatoria tome un valor en un intervalo dado. Compara el resultado con el método `cdf`.
+
+
+```{python}
+
+#| code-fold: true
+#| fig-align: "center"
+
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+import scipy.integrate as integrate
+
+# Configuración general de los gráficos
+plt.rcParams['figure.figsize'] = (8, 5)
+plt.rcParams['grid.alpha'] = 0.3
+
+
+# DISTRIBUCIÓN NORMAL (Gaussiana)
+
+# Parámetros: media (loc) = 0, desviación estándar (scale) = 1
+dist_normal = stats.norm(loc=0, scale=1)
+x1_norm, x2_norm = -1.0, 1.5  # Intervalo de interés
+
+# Cálculo de probabilidad
+prob_cdf_norm = dist_normal.cdf(x2_norm) - dist_normal.cdf(x1_norm)
+prob_quad_norm, _ = integrate.quad(dist_normal.pdf, x1_norm, x2_norm)
+
+print("="*60)
+print("1. DISTRIBUCIÓN NORMAL")
+print(f"Probabilidad con .cdf():           {prob_cdf_norm:.6f}")
+print(f"Probabilidad con integrate.quad:   {prob_quad_norm:.6f}")
+print(f"Diferencia absoluta:               {abs(prob_cdf_norm - prob_quad_norm):.1e}")
+
+# Gráfica
+x_norm = np.linspace(-4, 4, 500)
+x_fill_norm = np.linspace(x1_norm, x2_norm, 200)
+
+plt.figure()
+plt.plot(x_norm, dist_normal.pdf(x_norm), 'b-', lw=2, label='PDF Normal(0,1)')
+plt.fill_between(x_fill_norm, dist_normal.pdf(x_fill_norm), color='orange', alpha=0.4, 
+                 label=f'P({x1_norm} $\leq$ X $\leq$ {x2_norm})')
+plt.title('Distribución Normal Estándar')
+plt.xlabel('x')
+plt.ylabel('Densidad de probabilidad')
+plt.legend()
+plt.grid()
+plt.show()
+
+
+
+# DISTRIBUCIÓN EXPONENCIAL
+
+# Parámetro: escala (scale = 1/lambda) = 2.0 (lambda = 0.5)
+dist_exp = stats.expon(scale=2.0)
+x1_exp, x2_exp = 1.0, 4.0  # Intervalo de interés
+
+# Cálculo de probabilidad
+prob_cdf_exp = dist_exp.cdf(x2_exp) - dist_exp.cdf(x1_exp)
+prob_quad_exp, _ = integrate.quad(dist_exp.pdf, x1_exp, x2_exp)
+
+print("\n"+"="*60)
+print("2. DISTRIBUCIÓN EXPONENCIAL")
+print(f"Probabilidad con .cdf():           {prob_cdf_exp:.6f}")
+print(f"Probabilidad con integrate.quad:   {prob_quad_exp:.6f}")
+print(f"Diferencia absoluta:               {abs(prob_cdf_exp - prob_quad_exp):.1e}")
+
+# Gráfica
+x_exp = np.linspace(0, 10, 500)
+x_fill_exp = np.linspace(x1_exp, x2_exp, 200)
+
+plt.figure()
+plt.plot(x_exp, dist_exp.pdf(x_exp), 'r-', lw=2, label='PDF Exponencial($\lambda$=0.5)')
+plt.fill_between(x_fill_exp, dist_exp.pdf(x_fill_exp), color='green', alpha=0.4, 
+                 label=f'P({x1_exp} $\leq$ X $\leq$ {x2_exp})')
+plt.title('Distribución Exponencial')
+plt.xlabel('x')
+plt.ylabel('Densidad de probabilidad')
+plt.legend()
+plt.grid()
+plt.show()
+
+
+
+# DISTRIBUCIÓN BETA
+
+# Parámetros de forma: a = 2, b = 5 (Definida estrictamente en el intervalo [0, 1])
+dist_beta = stats.beta(a=2, b=5)
+x1_beta, x2_beta = 0.2, 0.6  # Intervalo de interés
+
+# Cálculo de probabilidad
+prob_cdf_beta = dist_beta.cdf(x2_beta) - dist_beta.cdf(x1_beta)
+prob_quad_beta, _ = integrate.quad(dist_beta.pdf, x1_beta, x2_beta)
+
+print("\n"+"="*60)
+print("3. DISTRIBUCIÓN BETA")
+print(f"Probabilidad con .cdf():           {prob_cdf_beta:.6f}")
+print(f"Probabilidad con integrate.quad:   {prob_quad_beta:.6f}")
+print(f"Diferencia absoluta:               {abs(prob_cdf_beta - prob_quad_beta):.1e}")
+
+# Gráfica
+x_beta = np.linspace(0, 1, 500)
+x_fill_beta = np.linspace(x1_beta, x2_beta, 200)
+
+plt.figure()
+plt.plot(x_beta, dist_beta.pdf(x_beta), 'g-', lw=2, label='PDF Beta(2,5)')
+plt.fill_between(x_fill_beta, dist_beta.pdf(x_fill_beta), color='purple', alpha=0.4, 
+                 label=f'P({x1_beta} $\leq$ X $\leq$ {x2_beta})')
+plt.title('Distribución Beta')
+plt.xlabel('x')
+plt.ylabel('Densidad de probabilidad')
+plt.legend()
+plt.grid()
+plt.show()
+
+
+# DISTRIBUCIÓN GAMMA
+
+# Parámetros: forma (a) = 3, escala (scale) = 1.5
+dist_gamma = stats.gamma(a=3, scale=1.5)
+x1_gamma, x2_gamma = 2.0, 6.0  # Intervalo de interés
+
+# Cálculo de probabilidad
+prob_cdf_gamma = dist_gamma.cdf(x2_gamma) - dist_gamma.cdf(x1_gamma)
+prob_quad_gamma, _ = integrate.quad(dist_gamma.pdf, x1_gamma, x2_gamma)
+
+print("\n"+"="*60)
+print("4. DISTRIBUCIÓN GAMMA")
+print(f"Probabilidad con .cdf():           {prob_cdf_gamma:.6f}")
+print(f"Probabilidad con integrate.quad:   {prob_quad_gamma:.6f}")
+print(f"Diferencia absoluta:               {abs(prob_cdf_gamma - prob_quad_gamma):.1e}")
+
+# Gráfica
+x_gamma = np.linspace(0, 15, 500)
+x_fill_gamma = np.linspace(x1_gamma, x2_gamma, 200)
+
+plt.figure()
+plt.plot(x_gamma, dist_gamma.pdf(x_gamma), 'm-', lw=2, label='PDF Gamma(a=3, scale=1.5)')
+plt.fill_between(x_fill_gamma, dist_gamma.pdf(x_fill_gamma), color='cyan', alpha=0.4, 
+                 label=f'P({x1_gamma} $\leq$ X $\leq$ {x2_gamma})')
+plt.title('Distribución Gamma')
+plt.xlabel('x')
+plt.ylabel('Densidad de probabilidad')
+plt.legend()
+plt.grid()
+plt.show()
+
+
+
+# DISTRIBUCIÓN CHI-CUADRADA ($\chi^2$)
+
+# Parámetro: grados de libertad (df) = 4
+dist_chi2 = stats.chi2(df=4)
+x1_chi2, x2_chi2 = 1.5, 5.0  # Intervalo de interés
+
+# Cálculo de probabilidad
+prob_cdf_chi2 = dist_chi2.cdf(x2_chi2) - dist_chi2.cdf(x1_chi2)
+prob_quad_chi2, _ = integrate.quad(dist_chi2.pdf, x1_chi2, x2_chi2)
+
+print("\n"+"="*60)
+print("5. DISTRIBUCIÓN CHI-CUADRADA")
+print(f"Probabilidad con .cdf():           {prob_cdf_chi2:.6f}")
+print(f"Probabilidad con integrate.quad:   {prob_quad_chi2:.6f}")
+print(f"Diferencia absoluta:               {abs(prob_cdf_chi2 - prob_quad_chi2):.1e}")
+print("="*60)
+
+# Gráfica
+x_chi2 = np.linspace(0, 12, 500)
+x_fill_chi2 = np.linspace(x1_chi2, x2_chi2, 200)
+
+plt.figure()
+plt.plot(x_chi2, dist_chi2.pdf(x_chi2), 'c-', lw=2, label='PDF $\chi^2$(df=4)')
+plt.fill_between(x_fill_chi2, dist_chi2.pdf(x_fill_chi2), color='brown', alpha=0.4, 
+                 label=f'P({x1_chi2} $\leq$ X $\leq$ {x2_chi2})')
+plt.title('Distribución Chi-Cuadrada')
+plt.xlabel('x')
+plt.ylabel('Densidad de probabilidad')
+plt.legend()
+plt.grid()
+plt.show()
+
+```
