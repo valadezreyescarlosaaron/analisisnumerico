@@ -819,7 +819,7 @@ fig = px.line(x = actividades_ts_2016.index, y = actividades_ts_2016.values, tit
 fig.update_xaxes(rangeslider_visible=True)
 ```
 
-Cada grafica tiene un comportamiento diferente, la actividad económica muestra una tendencia creciente a lo largo del tiempo, con algunas fluctuaciones. Las actividades primarias se observa una tendencia más estable, aunque con pocas variaciones. La actividad industrial se ve un comportamiento más cambiante, con picos y caídas más pronunciadas. En general, se observa que la actividad económica ha tenido un crecimiento constante, mientras que las actividades primarias e industriales han experimentado variaciones más significativas a lo largo del tiempo.
+Cada grafica tiene un comportamiento diferente, la gráfica actividad económica muestra una tendencia creciente a lo largo del tiempo, con algunas fluctuaciones. Las actividades primarias se observa una tendencia más estable, aunque con pocas variaciones. La actividad industrial se ve un comportamiento más cambiante, con picos y caídas más pronunciadas. En general, se observa que la actividad económica ha tenido un crecimiento constante, mientras que las actividades primarias e industriales han experimentado variaciones más significativas a lo largo del tiempo.
 
 # Ejercicio 3
 
